@@ -2,7 +2,7 @@ import pyparsing as pp
 
 import re
 import sqlite3
-
+import collections
 def gen_plt_expression(in_exc_flag, normalized_input):
     pass
 
@@ -49,7 +49,8 @@ greater_than_or_eq = ('=>','>=','≥', 'greater than or equal to', 'more or equa
 less_than = ('<')
 less_than_or_eq = ('<=', '=<', '≤')
 
-
+exponents = collections.Counter()
+units = collections.Counter()
 
 for r in rs:
     t = r[3]
@@ -57,5 +58,10 @@ for r in rs:
     g = platelets.search(parseable)
     if g is not None:
         print(t, g.groups())
+        exponents[g[3]] += 1
+        units[g[4]] += 1
     else:
         print(t, "NO MATCH")
+
+print(exponents)
+print(units)
