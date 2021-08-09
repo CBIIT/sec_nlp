@@ -18,7 +18,7 @@ create view nlp_data_view as
 select nlp.nct_id,nlp.ncit_code, nlp.display_order, n.pref_name ,nlp.span_text,
 nlp.start_index, nlp.end_index, tuc.inclusion_indicator, tuc.description
 from ncit_nlp_concepts nlp join ncit n on nlp.ncit_code = n.code
-join trial_unstructured_criteria tuc on nlp.nct_id = tuc.nct_id and nlp.display_order = tuc.display_order
+join trial_unstructured_criteria tuc on nlp.nct_id = tuc.nct_id and nlp.display_order = tuc.display_order;
 
 drop table if exists ncit_syns;
 create table ncit_syns
@@ -40,7 +40,12 @@ criteria_type_id int,
 display_order int,
 inclusion_indicator int,
 candidate_criteria_text text
+candidate_criteria_norm_form text,
+candidate_criteria_expression text
 );
+-- alter table candidate_criteria add candidate_criteria_norm_form text
+-- alter table candidate_criteria add candidate_criteria_expression text
+indexes --
 
 drop view if exists candidate_criteria_view;
 create view candidate_criteria_view as
