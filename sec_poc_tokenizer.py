@@ -91,7 +91,7 @@ for t in trial_list_for_processing:
     con.commit()
     crits = cur.fetchall()
 
-
+    cur.execute("delete from ncit_nlp_concepts where nct_id = ? ", [t[0]])
     for crit in crits:
         doc = nlp(crit[2])
 
