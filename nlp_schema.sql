@@ -1,3 +1,11 @@
+drop table if exists trial_nlp_dates;
+create table trial_nlp_dates(
+nct_id varchar(100) primary key,
+tokenized_date date,
+classification_date date
+);
+
+
 drop table if exists ncit_nlp_concepts;
 
 create table ncit_nlp_concepts
@@ -41,7 +49,9 @@ display_order int,
 inclusion_indicator int,
 candidate_criteria_text text
 candidate_criteria_norm_form text,
-candidate_criteria_expression text
+candidate_criteria_expression text,
+generated_date date,
+marked_done_date date
 );
 -- alter table candidate_criteria add candidate_criteria_norm_form text
 -- alter table candidate_criteria add candidate_criteria_expression text
@@ -59,7 +69,7 @@ order by cc.nct_id, cc.criteria_type_id
 ;
 
 
----
+-------------
 
 with performance_statuses as
 ( select descendant from ncit_tc where parent = 'C20641')
