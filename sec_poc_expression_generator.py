@@ -182,5 +182,42 @@ for t in trials:
     i = i + 1
 
 
+hiv_trials_to_process_sql = """
+select  cc.nct_id, cc.display_order
+from candidate_criteria cc join trial_nlp_dates nlp on cc.nct_id = nlp.nct_id
+where (cc.generated_date is  NULL or cc.generated_date < nlp.classification_date) and cc.criteria_type_id in (5)"""
+cur.execute(hiv_trials_to_process_sql)
+hiv_exc_trials = cur.fetchall()
+print("Processing HIV expressions")
+get_hiv_codes_sql = """
+select  distinct ncit_code from candidate_criteria cc join nlp_data_view nlp on cc.nct_id = nlp.nct_id and cc.display_order = nlp.display_order
+where cc.nct_id = ? and cc.display_order = ? and cc.criteria_type_id = 5
+"""
+i = 1
+for t in hiv_exc_trials:
+    print('Processing ', t[0], ' trial ', str(i), 'of', len(hiv_exc_trials))
+    cur.execute(get_hiv_codes_sql, [t[0], t[1]])
+    codes = cur.fetchall()
+    hiv_codes = [c[0] for c in codes]
+    #print("codes", hiv_codes)
+
+    if 'C15175' in hiv_codes or ( ('C14219' in hiv_codes or 'C14220' in hiv_codes)
+                                 and ('C25246' in hiv_codes or 'C128320' in hiv_codes or 'C54625' in hiv_codes
+                                or 'C80137' in hiv_codes or 'C159692' in hiv_codes or 'C48932' in hiv_codes or 'C45329' in hiv_codes)):
+        hiv_exp = "check_if_any('C15175') == 'YES'"
+        hiv_norm_form = 'HIV Positive (C15175)'
+    else:
+        hiv_exp = "NO MATCH"
+        hiv_norm_form = 'NO MATCH'
+
+    cur.execute("""update candidate_criteria set candidate_criteria_norm_form = ?, candidate_criteria_expression = ? , 
+                   generated_date = ?, marked_done_date = NULL 
+
+                      where nct_id = ? and criteria_type_id = ? and display_order = ?
+                   """, [hiv_norm_form, hiv_exp, datetime.datetime.now(), t[0], 5, t[1]])
+    i = i + 1
+    con.commit()
+
+
 
 con.close()
