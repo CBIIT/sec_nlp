@@ -120,7 +120,7 @@ for trial in trials_to_classify:
     else:
         cur.execute("insert into trial_nlp_dates(nct_id, classification_date) values(?,?)", [nct_id, datetime.datetime.now()])
     con.commit()
-
+    i = i + 1
 
 
 con.close()
