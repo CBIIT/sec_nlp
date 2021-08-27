@@ -34,20 +34,28 @@ con.commit()
 cur.execute(sql)
 r = cur.fetchall()
 bar = progressbar.ProgressBar(maxval=len(r),
-                              widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
+
+                       widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
 bar.start()
+
+biglist = []
 i=0
 for rec in r:
 
     c = rec[0]
     synonyms = rec[1].split('|')
     newlist = list(zip([c] * len(synonyms), synonyms, [s.lower() for s in synonyms]))
-    cur.executemany(insert_sql, newlist)
-    con.commit()
+
     i += 1
     bar.update(i)
+    biglist.extend(newlist)
     #print(rs)
 
+print("inserting synonmyms in database")
+cur.execute("BEGIN TRANSACTION")
+cur.executemany(insert_sql, biglist )
+con.commit()
+print("done inserting synonyms in database")
 cur.execute('create index ncit_syns_code_idx on ncit_syns(code)')
 cur.execute('create index ncit_syns_syn_name on ncit_syns(syn_name)')
 cur.execute('create index ncit_lsyns_syn_name on ncit_syns(l_syn_name)')
