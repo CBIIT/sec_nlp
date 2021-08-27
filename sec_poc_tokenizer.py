@@ -86,7 +86,7 @@ bar.start()
 i = 0
 
 for t in trial_list_for_processing:
-    print('processing trial ', i+1 , ' of ', len(trial_list_for_processing))
+    print('processing trial ',t[0], '-', i+1 , ' of ', len(trial_list_for_processing))
     cur.execute(get_crit_sql, [t[0]])
     con.commit()
     crits = cur.fetchall()
