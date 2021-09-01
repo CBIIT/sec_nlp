@@ -45,13 +45,39 @@ matcher.add("TerminologyList", patterns)
 end_nlp_init = datetime.datetime.now()
 print("NLP Init complete at", end_nlp_init, " elapsed time = ", end_nlp_init - start_nlp_init)
 
-#sys.exit()
-#cur.execute('delete from ncit_nlp_concepts')
-#con.commit()
-#doc = nlp(
-#"""
-#Any form of primary or secondary immunodeficiency; must have recovered immune competence after chemotherapy or radiation therapy as evidenced by lymphocyte counts (> 500/mm^3), white blood cell (WBC) (> 3,000/mm^3) or absence of opportunistic infections (Turnstile II - Chemotherapy/Cell Infusion Exclusion Criteria)
-#""")
+
+print("deleting data for trials no longer in active / treatment set")
+delete_old_concepts_sql = """
+with del_trials as 
+(
+select distinct c.nct_id from ncit_nlp_concepts c where not exists (select t.nct_id from trials t where t.nct_id = c.nct_id)
+)
+delete from ncit_nlp_concepts  where nct_id in (select d.nct_id from del_trials d)
+"""
+cur.execute(delete_old_concepts_sql)
+con.commit()
+
+
+delete_old_trial_dates_sql = """
+with del_trials as 
+(
+select distinct c.nct_id from trial_nlp_dates c where not exists (select t.nct_id from trials t where t.nct_id = c.nct_id)
+)
+delete from trial_nlp_dates  where nct_id in (select d.nct_id from del_trials d)
+"""
+cur.execute(delete_old_trial_dates_sql)
+con.commit()
+
+delete_old_cand_crit_sql = """
+with del_trials as 
+(
+select distinct c.nct_id from candidate_criteria c where not exists (select t.nct_id from trials t where t.nct_id = c.nct_id)
+)
+delete from candidate_criteria  where nct_id in (select d.nct_id from del_trials d)
+"""
+cur.execute(delete_old_trial_dates_sql)
+con.commit()
+
 
 get_trials_sql = """
 select t.nct_id from trials t left outer join trial_nlp_dates td on t.nct_id = td.nct_id where td.tokenized_date is null or td.tokenized_date <= max(t.record_verification_date, t.amendment_date) 
