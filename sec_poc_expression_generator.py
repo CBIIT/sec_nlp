@@ -190,7 +190,7 @@ cur.execute(hiv_trials_to_process_sql)
 hiv_exc_trials = cur.fetchall()
 print("Processing HIV expressions")
 get_hiv_codes_sql = """
-select  distinct ncit_code from candidate_criteria cc join nlp_data_view nlp on cc.nct_id = nlp.nct_id and cc.display_order = nlp.display_order
+select  distinct ncit_code from candidate_criteria cc join ncit_nlp_concepts nlp on cc.nct_id = nlp.nct_id and cc.display_order = nlp.display_order
 where cc.nct_id = ? and cc.display_order = ? and cc.criteria_type_id = 5
 """
 i = 1
@@ -201,9 +201,10 @@ for t in hiv_exc_trials:
     hiv_codes = [c[0] for c in codes]
     #print("codes", hiv_codes)
 
-    if 'C15175' in hiv_codes or ( ('C14219' in hiv_codes or 'C14220' in hiv_codes)
-                                 and ('C25246' in hiv_codes or 'C128320' in hiv_codes or 'C54625' in hiv_codes
-                                or 'C80137' in hiv_codes or 'C159692' in hiv_codes or 'C48932' in hiv_codes or 'C45329' in hiv_codes)):
+   # if 'C15175' in hiv_codes or ( ('C14219' in hiv_codes or 'C14220' in hiv_codes)
+   #                              and ('C25246' in hiv_codes or 'C128320' in hiv_codes or 'C54625' in hiv_codes
+   #                             or 'C80137' in hiv_codes or 'C159692' in hiv_codes or 'C48932' in hiv_codes or 'C45329' in hiv_codes)):
+    if 'C15175' in hiv_codes or 'C14219' in hiv_codes or 'C14220' in hiv_codes:
         hiv_exp = "check_if_any('C15175') == 'YES'"
         hiv_norm_form = 'HIV Positive (C15175)'
     else:
@@ -218,6 +219,37 @@ for t in hiv_exc_trials:
     i = i + 1
     con.commit()
 
+print("Processing brain mets")
+brain_mets_trials_to_process_sql = """
+select  cc.nct_id, cc.display_order
+from candidate_criteria cc join trial_nlp_dates nlp on cc.nct_id = nlp.nct_id
+where (cc.generated_date is  NULL or cc.generated_date < nlp.classification_date) and cc.criteria_type_id in (35)"""
+cur.execute(brain_mets_trials_to_process_sql)
+brain_mets_trials_to_process = cur.fetchall()
 
+get_brain_mets_codes_sql = """
+select  distinct ncit_code from candidate_criteria cc join ncit_nlp_concepts nlp on cc.nct_id = nlp.nct_id and cc.display_order = nlp.display_order
+where cc.nct_id = ? and cc.display_order = ? and cc.criteria_type_id = 35
+"""
 
+i = 1
+for t in brain_mets_trials_to_process:
+    print('Processing ', t[0], ' trial ', str(i), 'of', len(brain_mets_trials_to_process))
+    cur.execute(get_brain_mets_codes_sql, [t[0], t[1]])
+    codes = cur.fetchall()
+    brain_mets_codes = [c[0] for c in codes]
+    if 'C3813' in brain_mets_codes and ( 'C48932' in brain_mets_codes or 'C80137' in brain_mets_codes) :
+        brain_mets_exp = "(check_if_any('C4015') == 'YES')"
+        brain_mets_norm_form = 'CNS Metastases (C4015)'
+    else:
+        brain_mets_exp = "NO MATCH"
+        brain_mets_norm_form = 'NO MATCH'
+
+    cur.execute("""update candidate_criteria set candidate_criteria_norm_form = ?, candidate_criteria_expression = ? , 
+                   generated_date = ?, marked_done_date = NULL 
+
+                      where nct_id = ? and criteria_type_id = ? and display_order = ?
+                   """, [brain_mets_norm_form, brain_mets_exp, datetime.datetime.now(), t[0], 35, t[1]])
+    i = i + 1
+    con.commit()
 con.close()
