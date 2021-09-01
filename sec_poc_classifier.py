@@ -106,7 +106,7 @@ for trial in trials_to_classify:
     check_for_concepts(con, nct_id, 7, ['C51948'],1)
     check_for_concepts(con, nct_id, 6, ['C51951'],1)
     check_for_concepts(con, nct_id, 5, ['C14219'],0)
-    check_for_concepts(con, nct_id, 35, ['C4015'],1)
+    check_for_concepts(con, nct_id, 35, ['C4015'],0)
     check_for_concepts(con, nct_id, 1, ['C3910','C16612'],1)
 
 
