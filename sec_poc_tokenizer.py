@@ -2,7 +2,6 @@ import spacy
 from spacy.matcher import PhraseMatcher
 import sqlite3
 import datetime
-import progressbar
 import argparse
 import sys
 
@@ -80,7 +79,11 @@ con.commit()
 
 
 get_trials_sql = """
-select t.nct_id from trials t left outer join trial_nlp_dates td on t.nct_id = td.nct_id where td.tokenized_date is null or td.tokenized_date <= max(t.record_verification_date, t.amendment_date) 
+select  t.nct_id, t.record_verification_date, t.amendment_date, td.tokenized_date
+from trials t left outer join trial_nlp_dates td on t.nct_id = td.nct_id 
+where (td.tokenized_date is null)
+      or td.tokenized_date <= max(coalesce( t.record_verification_date,'1980-01-01'), 
+                                                            coalesce( t.amendment_date,'1980-01-01'))
 """
 
 get_crit_sql = """
@@ -106,13 +109,14 @@ trial_list_for_processing = cur.fetchall()
 
 print("there are ", len(trial_list_for_processing), " trials to tokenize ")
 
-bar = progressbar.ProgressBar(maxval=len(trial_list_for_processing),
-                              widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
-bar.start()
 i = 0
 
+print(f"{'Count' : <8}{'  NCT ID': <15}{'RVD' : ^30}{'Amendment Date' : ^30}{'Prior Tokenized Date' : ^30}")
+
+
+
 for t in trial_list_for_processing:
-    print('processing trial ',t[0], '-', i+1 , ' of ', len(trial_list_for_processing))
+    print(f"{i+1: <8}{t[0]: <15}{t[1] or '': ^30}{t[2] or '': ^30}{t[3] or '': ^30}")
     cur.execute(get_crit_sql, [t[0]])
     con.commit()
     crits = cur.fetchall()
@@ -160,7 +164,7 @@ for t in trial_list_for_processing:
         cur.execute("insert into trial_nlp_dates(nct_id, tokenized_date) values(?,?)", [t[0], datetime.datetime.now()])
     con.commit()
     i += 1
-    bar.update(i)
+ #   bar.update(i)
 
 
 con.close()
