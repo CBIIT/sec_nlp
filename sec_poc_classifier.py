@@ -2,7 +2,6 @@ import spacy
 from spacy.matcher import PhraseMatcher
 import sqlite3
 import datetime
-import progressbar
 import argparse
 
 
@@ -76,30 +75,26 @@ con = sqlite3.connect(args.dbfilename)
 
 
 
-
-
-#d = check_for_concepts(con, 'NCT00075387', 8, test_code)
-
-#print(d)
-
-
-
-
 get_trials_sql = """
-select t.nct_id from trials t left outer join trial_nlp_dates td on t.nct_id = td.nct_id where td.classification_date is null or td.classification_date <= max(t.record_verification_date, t.amendment_date)
+select t.nct_id , t.record_verification_date, t.amendment_date, td.classification_date from trials t 
+left outer join trial_nlp_dates td on t.nct_id = td.nct_id 
+where td.classification_date is null or td.classification_date <= max(coalesce(t.record_verification_date,'1980-01-01'),
+                                                                      coalesce(t.amendment_date,'1980-01-01'))
 """
 
 cur = con.cursor()
 cur.execute(get_trials_sql)
 trials_to_classify = cur.fetchall()
 print("there are ", len(trials_to_classify), " trials to classify ")
+print(f"{'Count' : <8}{'  NCT ID': <15}{'RVD' : ^30}{'Amendment Date' : ^30}{'Prior Classification Date' : ^30}")
 #sys.exit()
 #cur.execute('delete from candidate_criteria')
 con.commit()
 i = 1
 for trial in trials_to_classify:
     nct_id = trial[0]
-    print("processing ", nct_id, " trial ", i , " of ", len(trials_to_classify))
+    print(f"{i+1: <8}{trial[0]: <15}{trial[1] or '': ^30}{trial[2] or '': ^30}{trial[3] or '': ^30}")
+
     cur.execute("delete from candidate_criteria where nct_id = ? ", [nct_id])
 
     check_for_concepts(con, nct_id, 8, ['C20641'],1)
