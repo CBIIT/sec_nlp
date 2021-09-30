@@ -6,20 +6,48 @@ import argparse
 
 
 
-def check_for_concepts(con, nct_id, criteria_type_id, ncit_codes, inclusion_indicator):
+def check_for_concepts(con, nct_id, criteria_type_id, ncit_codes, inclusion_indicator, ncit_codes_to_remove = '', include_descendants = True):
 
-    desc_sql = """
-    with descendants as
-        (
-            select descendant from ncit_tc where parent in ({}) 
-        )
-    select
-     nlp.nct_id, nlp.display_order, nlp.ncit_code, nlp.start_index, nlp.end_index ,u.inclusion_indicator,  u.description
- from ncit_nlp_concepts nlp join descendants d on nlp.ncit_code = d.descendant and nlp.nct_id = ? 
- join trial_unstructured_criteria u on nlp.nct_id = u.nct_id  and nlp.display_order = u.display_order and u.inclusion_indicator = ? 
-    """.format(', '.join(['?'] * len(ncit_codes)))
+    if include_descendants:
+        desc_sql = """
+        with descendants as
+            (
+                select descendant from ncit_tc where parent in ({desc_1}) 
+            ),
+        descendants_to_remove as
+            (
+                select descendant from ncit_tc where parent in ({desc_to_remove}) 
+            )    
+       
+          select
+        nlp.nct_id, nlp.display_order, nlp.ncit_code, nlp.start_index, nlp.end_index ,u.inclusion_indicator,  u.description
+    from ncit_nlp_concepts nlp join descendants d on nlp.ncit_code = d.descendant and nlp.nct_id = ?
+    join trial_unstructured_criteria u on nlp.nct_id = u.nct_id  and nlp.display_order = u.display_order and u.inclusion_indicator = ?
+        and nlp.ncit_code not in (select descendant as ncit_code from descendants_to_remove) 
+        """.format(desc_1=', '.join(['?'] * len(ncit_codes)),
+                   desc_to_remove=', '.join(['?'] * len(ncit_codes_to_remove)))
+    else:
+        desc_sql = """
+        select
+               nlp.nct_id, nlp.display_order, nlp.ncit_code, nlp.start_index, nlp.end_index ,u.inclusion_indicator,  u.description
+           from ncit_nlp_concepts nlp 
+           join trial_unstructured_criteria u on nlp.nct_id = u.nct_id  and nlp.display_order = u.display_order and u.inclusion_indicator = ?
+               and nlp.ncit_code in ( {good_codes} ) and nlp.ncit_code not in ({codes_to_remove}) 
+                and nlp.nct_id = ?
+                """.format(good_codes=', '.join(['?'] * len(ncit_codes)),
+                          codes_to_remove=', '.join(['?'] * len(ncit_codes_to_remove)))
+
     cur = con.cursor()
-    cur.execute(desc_sql, [*ncit_codes, nct_id, inclusion_indicator])
+    if len(ncit_codes_to_remove) == 0:
+        if include_descendants:
+            cur.execute(desc_sql, [*ncit_codes, nct_id, inclusion_indicator])
+        else:
+            cur.execute(desc_sql, [inclusion_indicator, *ncit_codes, nct_id])
+    else:
+        if include_descendants:
+            cur.execute(desc_sql, [*ncit_codes, *ncit_codes_to_remove, nct_id, inclusion_indicator])
+        else:
+            cur.execute(desc_sql, [inclusion_indicator, *ncit_codes,  *ncit_codes_to_remove,nct_id])
     d = cur.fetchall()
    # print(d)
 
@@ -30,7 +58,7 @@ def check_for_concepts(con, nct_id, criteria_type_id, ncit_codes, inclusion_indi
     cur.execute(num_crits_for_trial_sql, [nct_id,inclusion_indicator])
     num_crits = cur.fetchone()[0]
     #print(num_crits)
-    if num_crits > 1:
+    if num_crits >= 1:
         # Iterate through and get the distinct criteria
         t = set()
         for crit in d:
@@ -43,10 +71,7 @@ def check_for_concepts(con, nct_id, criteria_type_id, ncit_codes, inclusion_indi
             """
             cur.execute(ins_sql, [nct_id, criteria_type_id, '('+ str(ncit_codes) + ')--- '+c[0],c[1] , c[2]])
         con.commit()
-    elif num_crits == 1:
-        # get the min and max and get sentences
 
-        pass
 
     return []
 
@@ -96,12 +121,12 @@ for trial in trials_to_classify:
 
     cur.execute("delete from candidate_criteria where nct_id = ? ", [nct_id])
 
-    check_for_concepts(con, nct_id, 8, ['C20641'],1)
-    check_for_concepts(con, nct_id, 7, ['C51948'],1)
-    check_for_concepts(con, nct_id, 6, ['C51951'],1)
-    check_for_concepts(con, nct_id, 5, ['C14219'],0)
-    check_for_concepts(con, nct_id, 35, ['C4015'],0)
-    check_for_concepts(con, nct_id, 1, ['C3910','C16612'],1)
+    check_for_concepts(con, nct_id, 8, ['C20641'],1, ncit_codes_to_remove=['C116664', 'C161964'])   # Performance status
+    check_for_concepts(con, nct_id, 7, ['C51948'],1, include_descendants=False) # WBC
+    check_for_concepts(con, nct_id, 6, ['C51951'],1)    # PLT
+    check_for_concepts(con, nct_id, 5, ['C14219'],0)    # HIV
+    check_for_concepts(con, nct_id, 35, ['C4015'],0)    # BMETS
+    check_for_concepts(con, nct_id, 1, ['C3910','C16612'],0, ncit_codes_to_remove= ['C90505'] )    # BIOMARKER EXC
 
 
     # PT -- need to split these out for inc/exclusion
