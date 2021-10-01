@@ -147,6 +147,13 @@ wbc = re.compile(r"""(Leukocyte[ ]count|White[ ]blood[ ]cells[ ]\(WBC\)|White[ ]
                  , re.VERBOSE | re.IGNORECASE | re.UNICODE | re.MULTILINE)
 
 
+ecog_perf_re = wbc = re.compile(r"""(\(*ecog\)*[ ]performance[ ])(\bscale|\bstatus)\s*(\bof)*(\(PS\))* # first group -  ecog name stuff - ecog with an optional closing paren , performance and then scale or status
+                                \s*
+                                ((\d\-\d) | \>\=\s*\d | \=\<\s*\d |(\d[ ]\bto[ ]\d)|(\d,[ ]\d,[ ]\bor[ ]\d)|(\d[ ]or\d))
+                                             
+
+"""
+                 , re.VERBOSE | re.IGNORECASE | re.UNICODE | re.MULTILINE)
 
 cand_sql = """
 select nct_id, criteria_type_id, inclusion_indicator, candidate_criteria_text, display_order from
@@ -252,4 +259,73 @@ for t in brain_mets_trials_to_process:
                    """, [brain_mets_norm_form, brain_mets_exp, datetime.datetime.now(), t[0], 35, t[1]])
     i = i + 1
     con.commit()
+
+perf_trials_to_process_sql = """
+select  cc.nct_id, cc.display_order
+from candidate_criteria cc join trial_nlp_dates nlp on cc.nct_id = nlp.nct_id
+where (cc.generated_date is  NULL or cc.generated_date < nlp.classification_date) and cc.criteria_type_id in (8)"""
+cur.execute(perf_trials_to_process_sql)
+perf_trials_to_process = cur.fetchall()
+print("Processing Performance Status expressions")
+get_perf_codes_sql = """
+select  distinct ncit_code from candidate_criteria cc join ncit_nlp_concepts nlp on cc.nct_id = nlp.nct_id and cc.display_order = nlp.display_order
+where cc.nct_id = ? and cc.display_order = ? and cc.criteria_type_id = 8
+"""
+perf_cand_sql = """
+select nct_id, criteria_type_id, inclusion_indicator, candidate_criteria_text, display_order from
+candidate_criteria where criteria_type_id = 8  and nct_id = ?
+"""
+ecog_codes_sql = """
+select descendant from ncit_tc where parent = 'C105721' 
+"""
+cur.execute(ecog_codes_sql)
+ecog_rs = cur.fetchall()
+ecog_codes = [c[0] for c in ecog_rs]
+ecog_codes_set = set(ecog_codes)
+i = 1
+for t in perf_trials_to_process:
+    print('Processing ', t[0], ' trial ', str(i), 'of', len(perf_trials_to_process))
+    cur.execute(get_perf_codes_sql, [t[0], t[1]])
+    codes = cur.fetchall()
+    perf_codes = [c[0] for c in codes]
+    perf_codes_set = set(perf_codes)
+
+    cur.execute(perf_cand_sql, [t[0]])
+    perf_cands = cur.fetchall()
+    i = i + 1
+
+    for pc in perf_cands:
+        g = ecog_perf_re.search(pc[3])
+       # print(pc[3])
+        print(g)
+        if g is not None:
+            newgroups = [s.strip() if s is not None else None for s in g.groups()]
+            ecog_groups  = list(dict.fromkeys([i for i in newgroups if i]))
+            print(newgroups)
+            print(ecog_groups)
+          #  hiv_exp = "check_if_any('C15175') == 'YES'"
+           # hiv_norm_form = 'HIV Positive (C15175)'
+            tstat = ecog_groups[len(ecog_groups)-1]
+            if tstat in ['0-2', '=< 2', '0, 1, or 2', '0 to 2']:
+                perf_norm_form = 'Performance Status <= 2'
+                perf_exp = 'C20641 <= 2'
+            elif tstat in ['0-1', '=< 1', '0 to 1', '0 or 1', '0 or1']:
+                perf_norm_form = 'Performance Status <= 1'
+                perf_exp = 'C20641 <= 2'
+            elif tstat in ['0-3', '=< 3', '0, 1, 2, or 3', '0 to 3']:
+                perf_norm_form = 'Performance Status <= 3'
+                perf_exp = 'C20641 <= 2'
+            elif tstat in ['2-3', '2 to 3', '2 or 3']:
+                perf_norm_form = ' 2 <= Performance Status <= 3'
+                perf_exp = '(C20641 == 2 || C20641 == 3)'
+            elif tstat in ['0-4', '=< 4', '0, 1, 2, 3 or 4', '0 to 4']:
+                perf_norm_form = 'Performance Status <= 4'
+                perf_exp = 'C20641 <= 4'
+            else:
+                perf_norm_form = 'NO MATCH'
+                perf_exp = 'NO MATCH'
+
+            print(perf_norm_form, perf_exp)
+
+
 con.close()
