@@ -3,7 +3,7 @@ import sqlite3
 import collections
 import argparse
 import datetime
-
+from create_performance_expression import parse_performance_string
 
 def normalize_numeric_val(crit_num_val, exp, units_val, lower_nonsense, upper_nonsense):
     # Normalize to uL
@@ -292,7 +292,7 @@ for t in perf_trials_to_process:
 
     cur.execute(perf_cand_sql, [t[0]])
     perf_cands = cur.fetchall()
-    i = i + 1
+
 
     for pc in perf_cands:
         g = ecog_perf_re.search(pc[3])
@@ -308,24 +308,30 @@ for t in perf_trials_to_process:
             tstat = ecog_groups[len(ecog_groups)-1]
             if tstat in ['0-2', '=< 2', '0, 1, or 2', '0 to 2']:
                 perf_norm_form = 'Performance Status <= 2'
-                perf_exp = 'C20641 <= 2'
+                perf_exp = parse_performance_string(perf_norm_form)
             elif tstat in ['0-1', '=< 1', '0 to 1', '0 or 1', '0 or1']:
                 perf_norm_form = 'Performance Status <= 1'
-                perf_exp = 'C20641 <= 2'
+                perf_exp = parse_performance_string(perf_norm_form)
             elif tstat in ['0-3', '=< 3', '0, 1, 2, or 3', '0 to 3']:
                 perf_norm_form = 'Performance Status <= 3'
-                perf_exp = 'C20641 <= 2'
+                perf_exp = parse_performance_string(perf_norm_form)
             elif tstat in ['2-3', '2 to 3', '2 or 3']:
                 perf_norm_form = ' 2 <= Performance Status <= 3'
-                perf_exp = '(C20641 == 2 || C20641 == 3)'
+                perf_exp = 'NO MATCH'
             elif tstat in ['0-4', '=< 4', '0, 1, 2, 3 or 4', '0 to 4']:
                 perf_norm_form = 'Performance Status <= 4'
-                perf_exp = 'C20641 <= 4'
+                perf_exp = parse_performance_string(perf_norm_form)
             else:
                 perf_norm_form = 'NO MATCH'
                 perf_exp = 'NO MATCH'
 
             print(perf_norm_form, perf_exp)
+            cur.execute("""update candidate_criteria set candidate_criteria_norm_form = ?, candidate_criteria_expression = ? , 
+                             generated_date = ?, marked_done_date = NULL 
 
+                                where nct_id = ? and criteria_type_id = ? and display_order = ?
+                             """, [perf_norm_form, perf_exp, datetime.datetime.now(), t[0], 8, t[1]])
+    i = i + 1
+    con.commit()
 
 con.close()
