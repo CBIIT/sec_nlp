@@ -5,6 +5,8 @@ import argparse
 import datetime
 from create_performance_expression import parse_performance_string
 
+
+
 def normalize_numeric_val(crit_num_val, exp, units_val, lower_nonsense, upper_nonsense):
     # Normalize to uL
     exp_multiplier_dict = {'x 10^9': 1000000000, 'x 109': 1000000000, 'x 10^3': 1000, '× 109': 1000000000,
@@ -147,13 +149,22 @@ wbc = re.compile(r"""(Leukocyte[ ]count|White[ ]blood[ ]cells[ ]\(WBC\)|White[ ]
                  , re.VERBOSE | re.IGNORECASE | re.UNICODE | re.MULTILINE)
 
 
-ecog_perf_re = wbc = re.compile(r"""(\(*ecog\)*[ ]performance[ ])(\bscale|\bstatus)\s*(\bof)*(\(PS\))* # first group -  ecog name stuff - ecog with an optional closing paren , performance and then scale or status
+
+ecog_perf_re =  re.compile(r"""(  (\(*\becog\)* |  (\(*\bzubrod\)* )) \s*performance[ ])(\bscale|\bstatus)\s*(\bof)*(\(PS\))*\:* # first group -  ecog name stuff - ecog with an optional closing paren , performance and then scale or status
                                 \s*
-                                ((\d\-\d) | \>\=\s*\d | \=\<\s*\d |(\d[ ]\bto[ ]\d)|(\d,[ ]\d,[ ]\bor[ ]\d)|(\d[ ]or\d))
-                                             
+                                ((\d\-\d) | \>\=\s*\d | \=\<\s*\d |(\d[ ]\bto[ ]\d)|(\d,[ ]\d,[ ]\bor[ ]\d)|(\d[ ]or\d)|(\d[ ]or[ ]\d))
+
 
 """
                  , re.VERBOSE | re.IGNORECASE | re.UNICODE | re.MULTILINE)
+
+
+karnofsky_lansky_perf_re = re.compile(r"""((\(*karnofsky\)*|\blansky)*[ ]performance[ ])(\bscale|\bstatus)(\(KPS\))*\s*(\bof)*
+                                \s*
+                                (\=\>|\>\=|\=\<|\<\=|\<|\>|≥|≤|greater[ ]than[ ]or[ ]equal[ ]to|more[ ]or[ ]equal[ ]to|less[ ]than|of[ ]at[ ]least|greater[ ]than)
+                                \d*\%*
+"""
+                          , re.VERBOSE | re.IGNORECASE | re.UNICODE | re.MULTILINE)
 
 cand_sql = """
 select nct_id, criteria_type_id, inclusion_indicator, candidate_criteria_text, display_order from
@@ -226,6 +237,9 @@ for t in hiv_exc_trials:
     i = i + 1
     con.commit()
 
+###############################################################################################
+# Brain mets
+###############################################################################################
 print("Processing brain mets")
 brain_mets_trials_to_process_sql = """
 select  cc.nct_id, cc.display_order
@@ -276,7 +290,7 @@ select nct_id, criteria_type_id, inclusion_indicator, candidate_criteria_text, d
 candidate_criteria where criteria_type_id = 8  and nct_id = ?
 """
 ecog_codes_sql = """
-select descendant from ncit_tc where parent = 'C105721' 
+select descendant from ncit_tc where parent in  ('C105721', 'C25400') 
 """
 cur.execute(ecog_codes_sql)
 ecog_rs = cur.fetchall()
@@ -293,10 +307,9 @@ for t in perf_trials_to_process:
     cur.execute(perf_cand_sql, [t[0]])
     perf_cands = cur.fetchall()
 
-
     for pc in perf_cands:
         g = ecog_perf_re.search(pc[3])
-       # print(pc[3])
+        # print(pc[3])
         print(g)
         if g is not None:
             newgroups = [s.strip() if s is not None else None for s in g.groups()]
@@ -306,10 +319,10 @@ for t in perf_trials_to_process:
           #  hiv_exp = "check_if_any('C15175') == 'YES'"
            # hiv_norm_form = 'HIV Positive (C15175)'
             tstat = ecog_groups[len(ecog_groups)-1]
-            if tstat in ['0-2', '=< 2', '0, 1, or 2', '0 to 2']:
+            if tstat in ['0-2', '=< 2', '0, 1, or 2', '0 to 2','< 3']:
                 perf_norm_form = 'Performance Status <= 2'
                 perf_exp = parse_performance_string(perf_norm_form)
-            elif tstat in ['0-1', '=< 1', '0 to 1', '0 or 1', '0 or1']:
+            elif tstat in ['0-1', '=< 1', '0 to 1', '0 or 1', '0 or1', '< 2']:
                 perf_norm_form = 'Performance Status <= 1'
                 perf_exp = parse_performance_string(perf_norm_form)
             elif tstat in ['0-3', '=< 3', '0, 1, 2, or 3', '0 to 3']:
@@ -326,11 +339,19 @@ for t in perf_trials_to_process:
                 perf_exp = 'NO MATCH'
 
             print(perf_norm_form, perf_exp)
-            cur.execute("""update candidate_criteria set candidate_criteria_norm_form = ?, candidate_criteria_expression = ? , 
-                             generated_date = ?, marked_done_date = NULL 
 
-                                where nct_id = ? and criteria_type_id = ? and display_order = ?
-                             """, [perf_norm_form, perf_exp, datetime.datetime.now(), t[0], 8, t[1]])
+        else:
+            # No ECOG so look for Karnofsky etc.
+            g = ecog_perf_re.search(pc[3])
+            perf_norm_form = 'NO MATCH'
+            perf_exp = 'NO MATCH'
+
+        cur.execute("""update candidate_criteria set candidate_criteria_norm_form = ?, candidate_criteria_expression = ? , 
+                                     generated_date = ?, marked_done_date = NULL 
+
+                                        where nct_id = ? and criteria_type_id = ? and display_order = ?
+                                     """, [perf_norm_form, perf_exp, datetime.datetime.now(), t[0], 8, t[1]])
+
     i = i + 1
     con.commit()
 
