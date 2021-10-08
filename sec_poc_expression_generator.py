@@ -150,10 +150,19 @@ wbc = re.compile(r"""(Leukocyte[ ]count|White[ ]blood[ ]cells[ ]\(WBC\)|White[ ]
 
 
 
-ecog_perf_re =  re.compile(r"""(  (\(*\becog\)* |  (\(*\bzubrod\)* )) \s*performance[ ])(\bscale|\bstatus)\s*(\bof)*(\(PS\))*\:* # first group -  ecog name stuff - ecog with an optional closing paren , performance and then scale or status
+ecog_perf_re =  re.compile(r"""(  (\(*\becog\)* |  (\(*\bzubrod\)* )) \s*(\bperformance)*[ ])(\bscale|\bstatus|\bscores|\bstatus[ ]score)\s*(\bbetween)*\s*(\bof)*(\(PS\))*\:* # first group -  ecog name stuff - ecog with an optional closing paren , performance and then scale or status
                                 \s*
-                                ((\d\-\d) | \>\=\s*\d | \=\<\s*\d |(\d[ ]\bto[ ]\d)|(\d,[ ]\d,[ ]\bor[ ]\d)|(\d[ ]or\d)|(\d[ ]or[ ]\d))
-
+                                ((\d\-\d)  # 0-2 etc
+                                | \>\=\s*\d # >= 2 etc
+                                | \=\<\s*\d  # =< 2 etc
+                                |(\d[ ]\bto[ ]\d) # 0 to 1 etc
+                                |(\d,[ ]{0,1}\d[ ]{0,1}or[ ]\d) 
+                                |(\d,[ ]{0,1}\d,[ ]{0,1}or[ ]{0,1}\d)
+                                |(\d,\d,[ ]\bor[ ]\d)
+                                |(\d[ ]or\d)|(\d[ ]or[ ]\d)
+                                |(\d,[ ]{0,1}\d,[ ]{0,1}\d[,]{0,1}[ ]{0,1}or[ ]{0,1}\d)
+                                )
+                                \s*
 
 """
                  , re.VERBOSE | re.IGNORECASE | re.UNICODE | re.MULTILINE)
@@ -319,7 +328,7 @@ for t in perf_trials_to_process:
           #  hiv_exp = "check_if_any('C15175') == 'YES'"
            # hiv_norm_form = 'HIV Positive (C15175)'
             tstat = ecog_groups[len(ecog_groups)-1]
-            if tstat in ['0-2', '=< 2', '0, 1, or 2', '0 to 2','< 3']:
+            if tstat in ['0-2', '=< 2', '0, 1, or 2', '0 to 2','< 3', '0, 1 or 2','0,1 or 2']:
                 perf_norm_form = 'Performance Status <= 2'
                 perf_exp = parse_performance_string(perf_norm_form)
             elif tstat in ['0-1', '=< 1', '0 to 1', '0 or 1', '0 or1', '< 2']:
