@@ -132,7 +132,9 @@ for trial in trials_to_classify:
 
 
     # PT -- need to split these out for inc/exclusion
-    check_for_concepts(con, nct_id , 36, ['C62634','C15313', 'C15329'],1)
+    check_for_concepts(con, nct_id , 36, ['C62634','C15313', 'C15329'],1)  # PT INC
+    check_for_concepts(con, nct_id , 37, ['C62634','C15313', 'C15329'],0)  # PT EXC
+
 
     cur.execute('select count(*) from trial_nlp_dates where nct_id = ?', [nct_id] )
     hm = cur.fetchone()[0]
