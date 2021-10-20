@@ -126,7 +126,9 @@ for trial in trials_to_classify:
     check_for_concepts(con, nct_id, 6, ['C51951'],1)    # PLT
     check_for_concepts(con, nct_id, 5, ['C14219'],0)    # HIV
     check_for_concepts(con, nct_id, 35, ['C4015'],0)    # BMETS
-    check_for_concepts(con, nct_id, 1, ['C3910','C16612'],0, ncit_codes_to_remove= ['C90505'] )    # BIOMARKER EXC
+    #check_for_concepts(con, nct_id, 1, ['C3910','C16612'],0, ncit_codes_to_remove= ['C90505'] )    # BIOMARKER EXC
+    check_for_concepts(con, nct_id, 1, ['C3910','C16612', 'C26548'],0, ncit_codes_to_remove= ['C90505'])    # BIOMARKER EXC
+    check_for_concepts(con, nct_id, 2, ['C3910','C16612', 'C26548'],1, ncit_codes_to_remove= ['C90505'] )    # BIOMARKER INC
 
 
     # PT -- need to split these out for inc/exclusion
