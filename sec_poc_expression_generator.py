@@ -18,7 +18,7 @@ def normalize_numeric_val(crit_num_val, exp, units_val, lower_nonsense, upper_no
                            '×10⁹': 1000000000, 'x 10^4': 10000, '× 10⁹': 1000000000, 'x 10⁹': 1000000000,
                            'x10E9': 1000000000, 'x 103': 1000, 'x103': 1000}
     unit_normalizer_to_ul_dict = {'/mm^3': 1, '/uL': 1, 'cells/mm^3': 1, '/ul': 1, '/ mcL': 1, '/μL': 1, '/mcl': 1,
-                                  '/mm3': 1, '/µL': 1, 'cells/μL': 1, '/μl': 1, '/cu mm': 1, 'cells/µl': 1,
+                                  '/mm3': 1, '/µL': 1, 'cell/uL': 1, 'cells/μL': 1, '/μl': 1, '/cu mm': 1, 'cells/µl': 1,
                                   '/mcL': 1, '/Ul': 1, '/cubic[ ]mm': 1, '/cubic millimeters': 1,
                                   '/mL': .001, '/ml': .001,
                                   'K/cumm': 1000, 'k/cumm': 1000, 'K/mcL': 1000, 'k/mcl': 1000, 'K/mm^3': 1000,
@@ -47,7 +47,7 @@ def normalize_numeric_val(crit_num_val, exp, units_val, lower_nonsense, upper_no
 def process_numeric_crit(rs, regex, con, cur, criteria_type_id, ncit_code, lower_nonsense, upper_nonsense):
     greater_than = ('>')
     greater_than_or_eq = (
-        '=>', '>=', '≥', 'greater than or equal to', 'more or equal to', 'of at least', 'greater than')
+        '=>', '>=', '≥', '>','greater than or equal to', 'more or equal to', 'of at least', 'greater than')
     less_than = ('<', 'less than')
     less_than_or_eq = ('<=', '=<', '≤')
 
@@ -60,14 +60,26 @@ def process_numeric_crit(rs, regex, con, cur, criteria_type_id, ncit_code, lower
                            t)  # get rid of the commas in numbers to help me stay sane
         g = regex.search(parseable)
         if g is not None:
-            newgroups = [s.strip() if s is not None else None for s in g.groups()]
+            newgroups_all = [s.strip() if s is not None else None for s in g.groups()]
+            newgroups = list(dict.fromkeys([i for i in newgroups_all if i]))
             new_normal_form = str(newgroups)
             new_expression = None
             print(t, newgroups)
-            exponents[newgroups[3]] += 1  # gather exponents for analysis
-            units[newgroups[4]] += 1  # gather units for analysis
-            if newgroups[2] is not None:
-                new_num = normalize_numeric_val(float(newgroups[2]), newgroups[3], newgroups[4], lower_nonsense,
+           # exponents[newgroups[3]] += 1  # gather exponents for analysis
+           # units[newgroups[4]] += 1  # gather units for analysis
+            exponent = None
+            units = None
+            if len(newgroups) == 4:
+                exponent = None
+                units = newgroups[3]
+            elif len(newgroups) == 5:
+                exponent = newgroups[3]
+                units = newgroups[4]
+            elif len(newgroups) == 3:
+                exponent = None
+                units = None
+            if len(newgroups) >=3 and newgroups[2] is not None and newgroups[2].isnumeric():
+                new_num = normalize_numeric_val(float(newgroups[2]), exponent, units, lower_nonsense,
                                                 upper_nonsense)
             #    print(new_num)
                 if newgroups[1] is not None:  # we have a relational
@@ -137,21 +149,32 @@ platelets = re.compile(r"""(platelet[ ]count[ ]of|platelet[ ]count[ ]is|platelet
                        , re.VERBOSE | re.IGNORECASE | re.UNICODE | re.MULTILINE)
 
 wbc = re.compile(r"""(Leukocyte[ ]count
+                       |Total[ ]White[ ]Blood[ ]Cell[ ]count[ ]\(WBC\) 
                        |White[ ]blood[ ]cells[ ]\(WBC\)
                        |White[ ]blood[ ]cell[ ]\(WBC\)
+                       |White[ ]blood[ ]cells[ ]\(WBC\)[ ]counts 
+                       |White[ ]blood[ ]cell[ ]\(WBC\)[ ]counts
                        |White[ ]blood[ ]cells
                        |White[ ]blood[ ]cell
+                       |White[ ]blood[ ]cell[ ]\(WBC[ ]\) 
                        |White[ ]blood[ ]cell[ ]\(WBC\)[ ]count 
                        |White[ ]blood[ ]cell[ ]count[ ]\(WBC\) 
                        |White[ ]blood[ ]count[ ]\(WBC\)
+                       |White[ ]blood[ ]cells[ ]\(WBCs\)
+                       |White[ ]blood[ ]cell[ ]\(WBC\)[ ]count[ ]of 
+                       |White[ ]blood[ ]cell[ ]count[ ]must[ ]be
+                       |White[ ]blood[ ]cell[ ]\(WBC\)[ ]value[ ]of
+                       |White[ ]blood[ ]cell[ ]count[ ]of
                        |White[ ]blood[ ]cell[ ]count[ ]
+                       |WBC[ ]count 
+                       |WBC
                        |Leukocytes:
                        |Leukocytes)   # first group -  description of test used
                    \s*                             # White space 
                    (\=\>|\>\=|\=\<|\<\=|\<|\>|≥|≤|greater[ ]than[ ]or[ ]equal[ ]to|more[ ]or[ ]equal[ ]to|less[ ]than|of[ ]at[ ]least|greater[ ]than)               # Relational operators
                    \s*                              # More white space
-                    #(\d+\[.,]*\d*)?    # number
-                    (\d+|\d{1,3}(,\d{3})*)(\.\d+)?
+                    (\d+[\.,]*\d*)?    # number
+                    #(\d+|\d{1,3}(,\d{3})*)(\.\d+)?
                     \s*([x|×|*]?\s*\d+\^?⁹?E?\d*\s*)?   # scientific notation indicator
                     [ ]?(K/cumm|per[ ]L|THO/uL|K/uL|[K|[ ]}?/mcL|K/mm\^3|K/cells/mm\^3|/uL|cells[ ]/mm3|/cu[ ]mm|/L|/µL|/mm\^3|cells/µl|/mm3|/[ ]mcL|/mcl|/ml|/l|/cubic[ ]millimeters|/cubic[ ]mm|uL)?
 
