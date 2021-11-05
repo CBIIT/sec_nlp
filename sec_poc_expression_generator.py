@@ -151,7 +151,7 @@ wbc = re.compile(r"""(Leukocyte[ ]count|White[ ]blood[ ]cells[ ]\(WBC\)|White[ ]
 
 
 ecog_perf_re =  re.compile(r""" (\(*\becog\)* |  (\(*\bzubrod\)* )) 
-                                \s*(\bperformance)*[ ](\bscale|\bstatus|\bscores|\bstatus[ ]score)
+                                \s*(\bperformance)*[ ](\bscale|\bstatus|\bscores|\bstatus[ ]score|\bscore)*
                                 ([ ]\(PS\))*
                                 ([ ]{0,1}\bmust[ ]be)*
                                 \s*(\bbetween)*\s*(\bof)*(\(PS\))*(\bof)*\:* # first group -  ecog name stuff - ecog with an optional closing paren , performance and then scale or status
