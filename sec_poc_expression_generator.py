@@ -63,7 +63,7 @@ def process_numeric_crit(rs, regex, con, cur, criteria_type_id, ncit_code, lower
             newgroups = [s.strip() if s is not None else None for s in g.groups()]
             new_normal_form = str(newgroups)
             new_expression = None
-            #print(t, newgroups)
+            print(t, newgroups)
             exponents[newgroups[3]] += 1  # gather exponents for analysis
             units[newgroups[4]] += 1  # gather units for analysis
             if newgroups[2] is not None:
@@ -85,7 +85,7 @@ def process_numeric_crit(rs, regex, con, cur, criteria_type_id, ncit_code, lower
                     if new_relational is not None:
                         new_expression = ncit_code + ' ' + new_relational + ' ' + str(new_num)
 
-                      #  print("inc_exc", r[2], "new normal form ", new_normal_form, "new expression ", new_expression)
+            print("inc_exc", r[2], "new normal form ", new_normal_form, "new expression ", new_expression)
             cur.execute(
                 """update candidate_criteria set candidate_criteria_norm_form = ?, candidate_criteria_expression = ? , 
                 generated_date = ?, marked_done_date = NULL 
@@ -136,12 +136,22 @@ platelets = re.compile(r"""(platelet[ ]count[ ]of|platelet[ ]count[ ]is|platelet
 """
                        , re.VERBOSE | re.IGNORECASE | re.UNICODE | re.MULTILINE)
 
-wbc = re.compile(r"""(Leukocyte[ ]count|White[ ]blood[ ]cells[ ]\(WBC\)|White[ ]blood[ ]cell[ ]count[ ]\(WBC\) |White[ ]blood[ ]count[ ]\(WBC\)|White[ ]blood[ ]cell[ ]count[ ]|Leukocytes)   # first group -  description of test used
+wbc = re.compile(r"""(Leukocyte[ ]count
+                       |White[ ]blood[ ]cells[ ]\(WBC\)
+                       |White[ ]blood[ ]cell[ ]\(WBC\)
+                       |White[ ]blood[ ]cells
+                       |White[ ]blood[ ]cell
+                       |White[ ]blood[ ]cell[ ]\(WBC\)[ ]count 
+                       |White[ ]blood[ ]cell[ ]count[ ]\(WBC\) 
+                       |White[ ]blood[ ]count[ ]\(WBC\)
+                       |White[ ]blood[ ]cell[ ]count[ ]
+                       |Leukocytes:
+                       |Leukocytes)   # first group -  description of test used
                    \s*                             # White space 
                    (\=\>|\>\=|\=\<|\<\=|\<|\>|≥|≤|greater[ ]than[ ]or[ ]equal[ ]to|more[ ]or[ ]equal[ ]to|less[ ]than|of[ ]at[ ]least|greater[ ]than)               # Relational operators
                    \s*                              # More white space
-                    (\d+\.?\d*)?    # number
-
+                    #(\d+\[.,]*\d*)?    # number
+                    (\d+|\d{1,3}(,\d{3})*)(\.\d+)?
                     \s*([x|×|*]?\s*\d+\^?⁹?E?\d*\s*)?   # scientific notation indicator
                     [ ]?(K/cumm|per[ ]L|THO/uL|K/uL|[K|[ ]}?/mcL|K/mm\^3|K/cells/mm\^3|/uL|cells[ ]/mm3|/cu[ ]mm|/L|/µL|/mm\^3|cells/µl|/mm3|/[ ]mcL|/mcl|/ml|/l|/cubic[ ]millimeters|/cubic[ ]mm|uL)?
 
