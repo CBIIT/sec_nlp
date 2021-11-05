@@ -150,16 +150,16 @@ wbc = re.compile(r"""(Leukocyte[ ]count|White[ ]blood[ ]cells[ ]\(WBC\)|White[ ]
 
 
 
-ecog_perf_re =  re.compile(r""" ((\bECOG\/Zubrod) | \(*\becog\)* |  (\(*\bzubrod\)* )  )  
+ecog_perf_re =  re.compile(r""" ((\bECOG\/Zubrod) | \(*\becog\)* |  (\(*\bzubrod\)* ) | (\bEastern[ ]Cooperative[ ]Oncology[ ]Group[ ]\(ECOG\) ) )  
                                 \s*(\bperformance)*[ ](\bscale|\bstatus|\bscores|\bstatus[ ]score|\bscore)*
-                                ([ ]\(PS\))*
+                                 ([ ]\(PS\))*
+                                 #([ ]\(\d{1,3}\))| ([ ]\(PS\))*
                                 ([ ]{0,1}\bmust[ ]be)*
                                 \s*(\bbetween)*\s*(\bof)*(\(PS\))*(\bof)*\:* # first group -  ecog name stuff - ecog with an optional closing paren , performance and then scale or status
                                 \s*
                                 (
                                 (\d\-\d)  # 0-2 etc
-                                | (\d[ ]\-[ ]\d)
-                                | \<\s*\d  # < 2 etc 
+                                | \<\s*\d
                                 | \>\=\s*\d # >= 2 etc
                                 | \=\<\s*\d  # =< 2 etc
                                 | ≤\s*\d
@@ -170,19 +170,26 @@ ecog_perf_re =  re.compile(r""" ((\bECOG\/Zubrod) | \(*\becog\)* |  (\(*\bzubrod
                                 |(\d,\d,[ ]\bor[ ]\d)
                                 |(\d[ ]or\d)|(\d[ ]or[ ]\d)
                                 |(\d,[ ]{0,1}\d,[ ]{0,1}\d[,]{0,1}[ ]{0,1}or[ ]{0,1}\d)
+                                | \(\d\-\d\) 
                                 )
                                 \s*
-
 """
                  , re.VERBOSE | re.IGNORECASE | re.UNICODE | re.MULTILINE)
 
 
-karnofsky_lansky_perf_re = re.compile(r"""((\(*karnofsky\)*|\blansky)*[ ]performance[ ])(\bscale|\bstatus)(\(KPS\))*\s*(\bof)*
-                                \s*
-                                (\=\>|\>\=|\=\<|\<\=|\<|\>|≥|≤|greater[ ]than[ ]or[ ]equal[ ]to|more[ ]or[ ]equal[ ]to|less[ ]than|of[ ]at[ ]least|greater[ ]than)
-                                (\d\d\%*)
+karnofsky_lansky_perf_re = re.compile(r"""
+                                 (\(*\bkarnofsky\)*|\blansky)
+                                 \s*
+                                 ((\bperformance[ ]scale)|(\bperformance[ ]status)|(\bperformance[ ]score)|(\bscore))*
+                                 \s
+                                  (\>\=|\=\>|\>\=|\=\<|\<\=|\<|\>|≥|≤)
+                                 \s*
+                                 (\d\d)
+                                 \s*
+
+
 """
-                          , re.VERBOSE | re.IGNORECASE | re.UNICODE | re.MULTILINE)
+                                      , re.VERBOSE | re.IGNORECASE | re.UNICODE | re.MULTILINE)
 
 cand_sql = """
 select nct_id, criteria_type_id, inclusion_indicator, candidate_criteria_text, display_order from
@@ -315,6 +322,7 @@ ecog_rs = cur.fetchall()
 ecog_codes = [c[0] for c in ecog_rs]
 ecog_codes_set = set(ecog_codes)
 i = 1
+karnofsky_to_ecog = {100: 0 , 90: 0, 80: 1, 70 : 1, 60: 2, 50: 2 , 40: 3, 30: 3, 20: 4 , 10: 4, 0: 5}
 for t in perf_trials_to_process:
     print('Processing ', t[0], ' trial ', str(i), 'of', len(perf_trials_to_process))
     cur.execute(get_perf_codes_sql, [t[0], t[1]])
@@ -361,8 +369,24 @@ for t in perf_trials_to_process:
         else:
             # No ECOG so look for Karnofsky etc.
             g = karnofsky_lansky_perf_re.search(pc[3])
+            print(g)
             perf_norm_form = 'NO MATCH'
             perf_exp = 'NO MATCH'
+            if g is not None:
+                print("Lansky / Karnofsky" , g.groups())
+                newgroups = [s.strip() if s is not None else None for s in g.groups()]
+                karnofsky_groups = list(dict.fromkeys([i for i in newgroups if i]))
+                # Last thing in the list should be number on the scale, we hope
+                karnofsky_score =  karnofsky_groups[len(karnofsky_groups)-1]
+                if karnofsky_score.isnumeric() and len(karnofsky_groups) >= 2:
+                    relational = karnofsky_groups[len(karnofsky_groups)-2]
+                    print("Karnofksy/Lansky : ", relational,karnofsky_score )
+                    if int(karnofsky_score) in karnofsky_to_ecog:
+                        ecog_equivalent = karnofsky_to_ecog[int(karnofsky_score)]
+                        # (\>\=|\=\>|\>\=|\=\<|\<\=|\<|\>|≥|≤)
+                        if relational in ['>=', '=>', '>','≥' ]:
+                            perf_norm_form = 'Performance Status <= '+str(ecog_equivalent)
+                            perf_exp = parse_performance_string(perf_norm_form)
 
         cur.execute("""update candidate_criteria set candidate_criteria_norm_form = ?, candidate_criteria_expression = ? , 
                                      generated_date = ?, marked_done_date = NULL 
