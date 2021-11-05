@@ -178,14 +178,28 @@ ecog_perf_re =  re.compile(r""" ((\bECOG\/Zubrod) | \(*\becog\)* |  (\(*\bzubrod
 
 
 karnofsky_lansky_perf_re = re.compile(r"""
-                                 (\(*\bkarnofsky\)*|\blansky)
+                                 (\bkarnofsky|\blansky)
                                  \s*
-                                 ((\bperformance[ ]scale)|(\bperformance[ ]status)|(\bperformance[ ]score)|(\bscore))*
+                                 (
+                                    (\bperformance[ ]scale[ ]of)
+                                    |(\bperformance[ ]score[ ]of)
+                                    |(\bperformance[ ]score[ ]\(kps\))
+                                     |(\bperformance[ ]scale[ ]\(kps\))
+                                    |(\bperformance[ ]status[ ]score)
+                                     |(\bperformance[ ]status[ ]\(kps\))
+                                    |(\bperformance[ ]scale)
+                                    |(\bperformance[ ]status)
+                                    |(\bperformance[ ]score)
+                                    |(\bscore)
+                                  )*
+                                
                                  \s
-                                  (\>\=|\=\>|\>\=|\=\<|\<\=|\<|\>|≥|≤)
+                                  (\>\=|\=\>|\>\=|\=\<|\<\=|\<|\>|≥|≤|greater[ ]than)
                                  \s*
                                  (\d\d)
                                  \s*
+
+
 
 
 """
@@ -384,7 +398,7 @@ for t in perf_trials_to_process:
                     if int(karnofsky_score) in karnofsky_to_ecog:
                         ecog_equivalent = karnofsky_to_ecog[int(karnofsky_score)]
                         # (\>\=|\=\>|\>\=|\=\<|\<\=|\<|\>|≥|≤)
-                        if relational in ['>=', '=>', '>','≥' ]:
+                        if relational in ['>=', '=>', '>','≥' , 'greater than']:
                             perf_norm_form = 'Performance Status <= '+str(ecog_equivalent)
                             perf_exp = parse_performance_string(perf_norm_form)
 
