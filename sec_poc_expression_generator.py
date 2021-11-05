@@ -150,7 +150,7 @@ wbc = re.compile(r"""(Leukocyte[ ]count|White[ ]blood[ ]cells[ ]\(WBC\)|White[ ]
 
 
 
-ecog_perf_re =  re.compile(r""" (\(*\becog\)* |  (\(*\bzubrod\)* )) 
+ecog_perf_re =  re.compile(r""" ((\bECOG\/Zubrod) | \(*\becog\)* |  (\(*\bzubrod\)* )  )  
                                 \s*(\bperformance)*[ ](\bscale|\bstatus|\bscores|\bstatus[ ]score|\bscore)*
                                 ([ ]\(PS\))*
                                 ([ ]{0,1}\bmust[ ]be)*
@@ -158,10 +158,12 @@ ecog_perf_re =  re.compile(r""" (\(*\becog\)* |  (\(*\bzubrod\)* ))
                                 \s*
                                 (
                                 (\d\-\d)  # 0-2 etc
+                                | (\d[ ]\-[ ]\d)
                                 | \<\s*\d  # < 2 etc 
                                 | \>\=\s*\d # >= 2 etc
                                 | \=\<\s*\d  # =< 2 etc
                                 | ≤\s*\d
+                                | less[ ]than[ ]or[ ]equal[ ]to[ ]\d 
                                 |(\d[ ]\bto[ ]\d) # 0 to 1 etc
                                 |(\d,[ ]{0,1}\d[ ]{0,1}or[ ]\d) 
                                 |(\d,[ ]{0,1}\d,[ ]{0,1}or[ ]{0,1}\d)
@@ -335,19 +337,19 @@ for t in perf_trials_to_process:
           #  hiv_exp = "check_if_any('C15175') == 'YES'"
            # hiv_norm_form = 'HIV Positive (C15175)'
             tstat = ecog_groups[len(ecog_groups)-1]
-            if tstat in ['0-2', '=< 2', '0, 1, or 2', '0 to 2', '< 3', '0, 1 or 2', '0,1 or 2', '≤ 2', '≤2']:
+            if tstat in ['0-2', '0 - 2', '=< 2', '0, 1, or 2', '0 to 2', '< 3', '0, 1 or 2', '0,1 or 2', '≤ 2', '≤2', 'less than or equal to 2']:
                 perf_norm_form = 'Performance Status <= 2'
                 perf_exp = parse_performance_string(perf_norm_form)
-            elif tstat in ['0-1', '=< 1', '0 to 1', '0 or 1', '0 or1', '< 2', '≤ 1', '0, 1']:
+            elif tstat in ['0-1', '=< 1', '0 to 1', '0 or 1', '0 or1', '< 2', '≤ 1', '0, 1', 'less than or equal to 1']:
                 perf_norm_form = 'Performance Status <= 1'
                 perf_exp = parse_performance_string(perf_norm_form)
-            elif tstat in ['0-3', '=< 3', '0, 1, 2, or 3', '0 to 3','0, 1, 2 or 3', '≤ 3']:
+            elif tstat in ['0-3', '=< 3', '0, 1, 2, or 3', '0 to 3','0, 1, 2 or 3', '≤ 3', 'less than or equal to 3']:
                 perf_norm_form = 'Performance Status <= 3'
                 perf_exp = parse_performance_string(perf_norm_form)
             elif tstat in ['2-3', '2 to 3', '2 or 3']:
                 perf_norm_form = ' 2 <= Performance Status <= 3'
                 perf_exp = 'NO MATCH'
-            elif tstat in ['0-4', '=< 4', '0, 1, 2, 3 or 4', '0 to 4', '≤ 4']:
+            elif tstat in ['0-4', '=< 4', '0, 1, 2, 3 or 4', '0 to 4', '≤ 4', 'less than or equal to 4']:
                 perf_norm_form = 'Performance Status <= 4'
                 perf_exp = parse_performance_string(perf_norm_form)
             else:
