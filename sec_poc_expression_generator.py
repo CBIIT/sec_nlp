@@ -183,7 +183,12 @@ wbc = re.compile(r"""(Leukocyte[ ]count
 
 
 
-ecog_perf_re =  re.compile(r""" ((\bECOG\/Zubrod) | \(*\becog\)* |  (\(*\bzubrod\)* ) | (\bEastern[ ]Cooperative[ ]Oncology[ ]Group[ ]\(ECOG\) ) )  
+ecog_perf_re =  re.compile(r""" ((\bECOG\/Zubrod) 
+                                | \(*\becog\)* 
+                                |  (\(*\bzubrod\)* ) 
+                                | (Eastern[ ]Cooperative[ ]Oncology[ ]Group/Gynecologic[ ]Oncology[ ]Group[ ]\(ECOG/GOG\) ) 
+                                 | (\bGynecologic[ ]Oncology[ ]Group[ ]\(GOG\))
+                                | (\bEastern[ ]Cooperative[ ]Oncology[ ]Group[ ]\(ECOG\) ) )  
                                 \s*(\bperformance)*[ ](\bscale|\bstatus|\bscores|\bstatus[ ]score|\bscore)*
                                  ([ ]\(PS\))*
                                  #([ ]\(\d{1,3}\))| ([ ]\(PS\))*
@@ -194,8 +199,10 @@ ecog_perf_re =  re.compile(r""" ((\bECOG\/Zubrod) | \(*\becog\)* |  (\(*\bzubrod
                                 (\d\-\d)  # 0-2 etc
                                 | \<\s*\d
                                 | \>\=\s*\d # >= 2 etc
+                                | \=\<\s*\d-\d  # =< 0-1 glop
                                 | \=\<\s*\d  # =< 2 etc
                                 | ≤\s*\d
+                                | less[ ]than[ ]or[ ]equal[ ]to[ ]\d-\d 
                                 | less[ ]than[ ]or[ ]equal[ ]to[ ]\d 
                                 |(\d[ ]\bto[ ]\d) # 0 to 1 etc
                                 |(\d,[ ]{0,1}\d[ ]{0,1}or[ ]\d) 
@@ -209,31 +216,31 @@ ecog_perf_re =  re.compile(r""" ((\bECOG\/Zubrod) | \(*\becog\)* |  (\(*\bzubrod
 """
                  , re.VERBOSE | re.IGNORECASE | re.UNICODE | re.MULTILINE)
 
-
 karnofsky_lansky_perf_re = re.compile(r"""
                                  (\bkarnofsky|\blansky)
                                  \s*
-                                 (
-                                    (\bperformance[ ]scale[ ]of)
+                                 (     (\bperformance[ ]status[ ]\(kps\)[ ]score[ ]of)
+                                     |(\bperformance[ ]status[ ]\(kps\)[ ]of)
+                                      |(\bperformance[ ]scale[ ]score)
+									 |(\bperformance[ ]scale[ ]of)
+									 |(\bperformance[ ]status[ ]score[ ]of)
+									  |(\bperformance[ ]status[ ]of)
                                     |(\bperformance[ ]score[ ]of)
                                     |(\bperformance[ ]score[ ]\(kps\))
                                      |(\bperformance[ ]scale[ ]\(kps\))
                                     |(\bperformance[ ]status[ ]score)
-                                     |(\bperformance[ ]status[ ]\(kps\))
+                                      |(\bperformance[ ]status[ ]\(kps\))
                                     |(\bperformance[ ]scale)
                                     |(\bperformance[ ]status)
                                     |(\bperformance[ ]score)
                                     |(\bscore)
                                   )*
-                                
+
                                  \s
-                                  (\>\=|\=\>|\>\=|\=\<|\<\=|\<|\>|≥|≤|greater[ ]than)
+                                  (\>\=|\=\>|\>\=|\=\<|\<\=|\<|\>|≥|≤|greater[ ]than[ ]or[ ]equal[ ]to|greater[ ]than|at[ ]least)
                                  \s*
                                  (\d\d)
                                  \s*
-
-
-
 
 """
                                       , re.VERBOSE | re.IGNORECASE | re.UNICODE | re.MULTILINE)
@@ -369,7 +376,7 @@ ecog_rs = cur.fetchall()
 ecog_codes = [c[0] for c in ecog_rs]
 ecog_codes_set = set(ecog_codes)
 i = 1
-karnofsky_to_ecog = {100: 0 , 90: 0, 80: 1, 70 : 1, 60: 2, 50: 2 , 40: 3, 30: 3, 20: 4 , 10: 4, 0: 5}
+karnofsky_to_ecog = {100: 0, 90: 0, 80: 1, 70: 1, 60: 2, 50: 2, 40: 3, 30: 3, 20: 4, 10: 4, 0: 5}
 for t in perf_trials_to_process:
     print('Processing ', t[0], ' trial ', str(i), 'of', len(perf_trials_to_process))
     cur.execute(get_perf_codes_sql, [t[0], t[1]])
@@ -395,7 +402,7 @@ for t in perf_trials_to_process:
             if tstat in ['0-2', '0 - 2', '=< 2', '0, 1, or 2', '0 to 2', '< 3', '0, 1 or 2', '0,1 or 2', '≤ 2', '≤2', 'less than or equal to 2']:
                 perf_norm_form = 'Performance Status <= 2'
                 perf_exp = parse_performance_string(perf_norm_form)
-            elif tstat in ['0-1', '=< 1', '0 to 1', '0 or 1', '0 or1', '< 2', '≤ 1', '0, 1', 'less than or equal to 1']:
+            elif tstat in ['0-1', '=< 1', '0 to 1', '0 or 1', '0 or1', '< 2', '≤ 1', '0, 1', 'less than or equal to 1', '=< 0-1']:
                 perf_norm_form = 'Performance Status <= 1'
                 perf_exp = parse_performance_string(perf_norm_form)
             elif tstat in ['0-3', '=< 3', '0, 1, 2, or 3', '0 to 3','0, 1, 2 or 3', '≤ 3', 'less than or equal to 3']:
@@ -431,7 +438,7 @@ for t in perf_trials_to_process:
                     if int(karnofsky_score) in karnofsky_to_ecog:
                         ecog_equivalent = karnofsky_to_ecog[int(karnofsky_score)]
                         # (\>\=|\=\>|\>\=|\=\<|\<\=|\<|\>|≥|≤)
-                        if relational in ['>=', '=>', '>','≥' , 'greater than']:
+                        if relational in ['>=', '=>', '>','≥' , 'greater than', 'greater than or equal to', 'at least']:
                             perf_norm_form = 'Performance Status <= '+str(ecog_equivalent)
                             perf_exp = parse_performance_string(perf_norm_form)
 
