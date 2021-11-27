@@ -181,40 +181,71 @@ wbc = re.compile(r"""(Leukocyte[ ]count
 """
                  , re.VERBOSE | re.IGNORECASE | re.UNICODE | re.MULTILINE)
 
+ecog_perf_re = re.compile(r""" (
+                                 # (\bECOG\/Zubrod) 
+                                #| \(*\becog\)* 
+                                #|  (\(*\bzubrod\)* ) 
+                                 (Eastern[ ]Cooperative[ ]Oncology[ ]Group[ ]\(ECOG\)[ ]\(Zubrod\))
+                                | (most[ ]recent[ ]zubrod)
 
+                                 |  (zubrod) 
+                                | (Eastern[ ]Cooperative[ ]Oncology[ ]Group[ ]\(ECOG\)[ ]-[ ]American[ ]College[ ]of[ ]Radiology[ ]Imaging[ ]Network[ ]\(ACRIN\))
+                                | (Eastern[ ]Cooperative[ ]Oncology[ ]Group[ ]\(ECOG\)-American[ ]College[ ]of[ ]Radiology[ ]Imaging[ ]Network[ ]\(ACRIN\))
 
-ecog_perf_re =  re.compile(r""" ((\bECOG\/Zubrod) 
-                                | \(*\becog\)* 
-                                |  (\(*\bzubrod\)* ) 
-                                | (Eastern[ ]Cooperative[ ]Oncology[ ]Group/Gynecologic[ ]Oncology[ ]Group[ ]\(ECOG/GOG\) ) 
-                                 | (\bGynecologic[ ]Oncology[ ]Group[ ]\(GOG\))
-                                | (\bEastern[ ]Cooperative[ ]Oncology[ ]Group[ ]\(ECOG\) ) )  
-                                \s*(\bperformance)*[ ](\bscale|\bstatus|\bscores|\bstatus[ ]score|\bscore)*
+                                | (ECOG\-ACRIN)
+                                | (ECOG\/Zubrod) 
+                                | (Eastern[ ]Cooperation[ ]Oncology[ ]Group[ ]\(ECOG\))
+                                | (Eastern[ ]Cooperative[ ]Oncology[ ]Group[ ]\(ECOG\)[ ]\(World[ ]Health[ ]Organization[ ]\[WHO\]/Gynecologic[ ]Oncology[ ]Group[ ]\[GOG\]/Zubrod[ ]score\))
+                                | (Eastern[ ]Cooperative[ ]Oncology[ ]Group/Gynecologic[ ]Oncology[ ]Group[ ]\(ECOG/GOG\)) 
+                                | (Eastern[ ]Cooperative[ ]Oncology[ ]Group[ ]Performance[ ]Status[ ]\(ECOG[ ]PS\) )
+                                 | (Eastern[ ]Cooperative[ ]Oncology[ ]Group[ ]\(ECOG\)) 
+                                | (Eastern[ ]Cooperative[ ]Oncology[ ]Group) 
+                                | (Eastern[ ]Cooperative[ ]Group[ ]\(ECOG\)) 
+                                | (Gynecological[ ]Oncology[ ]Group[ ]\(GOG\)) 
+                                 | (Gynecologic[ ]Oncology[ ]Group[ ]\(GOG\))
+
+                                | (Eastern[ ]Cooperative[ ]Oncology[ ]Group[ ]\(ECOG\) ) 
+                                | (ECOG) 
+                                ) 
+
+                                (\s*(performance)*[ ](scale|status[ ]must[ ]be|status|scores|status[ ]score|status[ ]grade|score|)(of)*(\:)*(must[ ]be)* )
                                  ([ ]\(PS\))*
-                                 #([ ]\(\d{1,3}\))| ([ ]\(PS\))*
-                                ([ ]{0,1}\bmust[ ]be)*
-                                \s*(\bbetween)*\s*(\bof)*(\(PS\))*(\bof)*\:* # first group -  ecog name stuff - ecog with an optional closing paren , performance and then scale or status
+                               #  #([ ]\(\d{1,3}\))| ([ ]\(PS\))*
+                               # ([ ]{0,1}\bmust[ ]be)*
+                               # # \s*(\bbetween)*\s*(\bof)*(\(PS\))*(\bof)*\:* # first group -  ecog name stuff - ecog with an optional closing paren , performance and then scale or status
+                               ( (\s*(\bbetween)*)
+                               | (\s*(\bof)*(\(PS\))*))
+                               #|(\bof*\:*))* # first group -  ecog name stuff - ecog with an optional closing paren , performance and then scale or status
+#
                                 \s*
                                 (
-                                (\d\-\d)  # 0-2 etc
-                                | \<\s*\d
-                                | \>\=\s*\d # >= 2 etc
-                                | \=\<\s*\d-\d  # =< 0-1 glop
-                                | \=\<\s*\d  # =< 2 etc
-                                | ≤\s*\d
-                                | less[ ]than[ ]or[ ]equal[ ]to[ ]\d-\d 
-                                | less[ ]than[ ]or[ ]equal[ ]to[ ]\d 
+                                  (\d[ ]\-[ ]\d) 
+                                  | (\=\<[ ]\d\-\d) 
+                                 |(\d[ ]–[ ]\d) 
+                                 |(\d-[ ]\d)
+                                | (\=\<\s*\d)  # =< 2 etc
+                                |(\d\-\d)  # 0-2 etc
+                                 |(\d‐\d)
+                                | (\<\s*\d )
+                                | (\>\=\s*\d )# >= 2 etc
+                                | (\=\<\s*\d-\d)  # =< 0-1 glop
+                                | (\=\s*\d)
+                                | (≤\s*\d)
+                                | (less[ ]than[ ]or[ ]equal[ ]to[ ]\d-\d) 
+                                | (less[ ]than[ ]or[ ]equal[ ]to[ ]\d) 
                                 |(\d[ ]\bto[ ]\d) # 0 to 1 etc
                                 |(\d,[ ]{0,1}\d[ ]{0,1}or[ ]\d) 
                                 |(\d,[ ]{0,1}\d,[ ]{0,1}or[ ]{0,1}\d)
                                 |(\d,\d,[ ]\bor[ ]\d)
+                                |(\d,[ ]\d,[ ]\d)
                                 |(\d[ ]or\d)|(\d[ ]or[ ]\d)
                                 |(\d,[ ]{0,1}\d,[ ]{0,1}\d[,]{0,1}[ ]{0,1}or[ ]{0,1}\d)
                                 | \(\d\-\d\) 
-                                )
-                                \s*
+                                ) 
+
+                               # \s*
 """
-                 , re.VERBOSE | re.IGNORECASE | re.UNICODE | re.MULTILINE)
+                          , re.VERBOSE | re.IGNORECASE | re.UNICODE | re.MULTILINE)
 
 karnofsky_lansky_perf_re = re.compile(r"""
                                  (\bkarnofsky|\blansky)
@@ -399,13 +430,13 @@ for t in perf_trials_to_process:
           #  hiv_exp = "check_if_any('C15175') == 'YES'"
            # hiv_norm_form = 'HIV Positive (C15175)'
             tstat = ecog_groups[len(ecog_groups)-1]
-            if tstat in ['0-2', '0 - 2', '=< 2', '0, 1, or 2', '0 to 2', '< 3', '0, 1 or 2', '0,1 or 2', '≤ 2', '≤2', 'less than or equal to 2']:
+            if tstat in ['0-2', '0 - 2', '0 – 2','0- 2', '=< 2', '0, 1, or 2', '0 to 2', '< 3', '0, 1 or 2', '0,1 or 2', '≤ 2', '≤2', 'less than or equal to 2', '0, 1, 2']:
                 perf_norm_form = 'Performance Status <= 2'
                 perf_exp = parse_performance_string(perf_norm_form)
             elif tstat in ['0-1', '=< 1', '0 to 1', '0 or 1', '0 or1', '< 2', '≤ 1', '0, 1', 'less than or equal to 1', '=< 0-1']:
                 perf_norm_form = 'Performance Status <= 1'
                 perf_exp = parse_performance_string(perf_norm_form)
-            elif tstat in ['0-3', '=< 3', '0, 1, 2, or 3', '0 to 3','0, 1, 2 or 3', '≤ 3', 'less than or equal to 3']:
+            elif tstat in ['0-3', '0‐3', '=< 3', '0, 1, 2, or 3', '0 to 3','0, 1, 2 or 3', '≤ 3', 'less than or equal to 3']:
                 perf_norm_form = 'Performance Status <= 3'
                 perf_exp = parse_performance_string(perf_norm_form)
             elif tstat in ['2-3', '2 to 3', '2 or 3']:
