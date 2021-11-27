@@ -195,6 +195,8 @@ ecog_perf_re = re.compile(r""" (
                                 | (ECOG\-ACRIN)
                                 | (ECOG\/Zubrod) 
                                 | (Eastern[ ]Cooperation[ ]Oncology[ ]Group[ ]\(ECOG\))
+                                | (Eastern[ ]Collaborative[ ]Oncology[ ]Group[ ]\(ECOG\))
+                                | (Eastern[ ]Cooperation[ ]Oncology[ ]Group[ ]\(ECOG\))
                                 | (Eastern[ ]Cooperative[ ]Oncology[ ]Group[ ]\(ECOG\)[ ]\(World[ ]Health[ ]Organization[ ]\[WHO\]/Gynecologic[ ]Oncology[ ]Group[ ]\[GOG\]/Zubrod[ ]score\))
                                 | (Eastern[ ]Cooperative[ ]Oncology[ ]Group/Gynecologic[ ]Oncology[ ]Group[ ]\(ECOG/GOG\)) 
                                 | (Eastern[ ]Cooperative[ ]Oncology[ ]Group[ ]Performance[ ]Status[ ]\(ECOG[ ]PS\) )
@@ -229,6 +231,7 @@ ecog_perf_re = re.compile(r""" (
                                 | (\<\s*\d )
                                 | (\>\=\s*\d )# >= 2 etc
                                 | (\=\<\s*\d-\d)  # =< 0-1 glop
+                                | (\=[ ]\d,[ ]\d,[ ]or[ ]\d)
                                 | (\=\s*\d)
                                 | (≤\s*\d)
                                 | (less[ ]than[ ]or[ ]equal[ ]to[ ]\d-\d) 
@@ -385,9 +388,11 @@ for t in brain_mets_trials_to_process:
     con.commit()
 
 perf_trials_to_process_sql = """
-select  cc.nct_id, cc.display_order
+select  distinct cc.nct_id
 from candidate_criteria cc join trial_nlp_dates nlp on cc.nct_id = nlp.nct_id
-where (cc.generated_date is  NULL or cc.generated_date < nlp.classification_date) and cc.criteria_type_id in (8)"""
+where (cc.generated_date is  NULL or cc.generated_date < nlp.classification_date) and cc.criteria_type_id in (8)
+
+"""
 cur.execute(perf_trials_to_process_sql)
 perf_trials_to_process = cur.fetchall()
 print("Processing Performance Status expressions")
@@ -410,10 +415,10 @@ i = 1
 karnofsky_to_ecog = {100: 0, 90: 0, 80: 1, 70: 1, 60: 2, 50: 2, 40: 3, 30: 3, 20: 4, 10: 4, 0: 5}
 for t in perf_trials_to_process:
     print('Processing ', t[0], ' trial ', str(i), 'of', len(perf_trials_to_process))
-    cur.execute(get_perf_codes_sql, [t[0], t[1]])
-    codes = cur.fetchall()
-    perf_codes = [c[0] for c in codes]
-    perf_codes_set = set(perf_codes)
+    #cur.execute(get_perf_codes_sql, [t[0], t[1]])
+    #codes = cur.fetchall()
+    #perf_codes = [c[0] for c in codes]
+    #perf_codes_set = set(perf_codes)
 
     cur.execute(perf_cand_sql, [t[0]])
     perf_cands = cur.fetchall()
@@ -477,7 +482,7 @@ for t in perf_trials_to_process:
                                      generated_date = ?, marked_done_date = NULL 
 
                                         where nct_id = ? and criteria_type_id = ? and display_order = ?
-                                     """, [perf_norm_form, perf_exp, datetime.datetime.now(), t[0], 8, t[1]])
+                                     """, [perf_norm_form, perf_exp, datetime.datetime.now(), t[0], 8, pc[4]])
 
     i = i + 1
     con.commit()
