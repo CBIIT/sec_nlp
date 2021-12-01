@@ -98,8 +98,6 @@ args = parser.parse_args()
 
 con = sqlite3.connect(args.dbfilename)
 
-
-
 get_trials_sql = """
 select t.nct_id , t.record_verification_date, t.amendment_date,td.tokenized_date, td.classification_date from trials t 
 left outer join trial_nlp_dates td on t.nct_id = td.nct_id 
@@ -107,6 +105,16 @@ where td.classification_date is null or td.classification_date <= td.tokenized_d
 """
 
 cur = con.cursor()
+cur.execute("""
+select count(distinct nct_id) as num_trials_to_delete  from candidate_criteria cc where cc.nct_id not in (select nct_id from trials)
+""")
+num_to_delete = cur.fetchone()[0]
+print("there are ", num_to_delete, 'trials that are no longer that have NLP derived criteria. Deleting those.')
+cur.execute("""
+delete from candidate_criteria where nct_id not in (select nct_id from trials)
+""")
+con.commit()
+
 cur.execute(get_trials_sql)
 trials_to_classify = cur.fetchall()
 print("there are ", len(trials_to_classify), " trials to classify ")
