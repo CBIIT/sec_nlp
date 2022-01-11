@@ -201,16 +201,19 @@ ecog_perf_re = re.compile(r""" (
                                 | (Eastern[ ]Cooperative[ ]Oncology[ ]Group/Gynecologic[ ]Oncology[ ]Group[ ]\(ECOG/GOG\)) 
                                 | (Eastern[ ]Cooperative[ ]Oncology[ ]Group[ ]Performance[ ]Status[ ]\(ECOG[ ]PS\) )
                                  | (Eastern[ ]Cooperative[ ]Oncology[ ]Group[ ]\(ECOG\)) 
+                                  | (Eastern[ ]Cooperative[ ]Oncology[ ]Group[\n]\(ECOG\)) 
                                 | (Eastern[ ]Cooperative[ ]Oncology[ ]Group) 
                                 | (Eastern[ ]Cooperative[ ]Group[ ]\(ECOG\)) 
                                 | (Gynecological[ ]Oncology[ ]Group[ ]\(GOG\)) 
                                  | (Gynecologic[ ]Oncology[ ]Group[ ]\(GOG\))
                                  |  (ECOG/WHO[ ]performance[ ]status) 
                                 | (Eastern[ ]Cooperative[ ]Oncology[ ]Group[ ]\(ECOG\) ) 
+                                | (Eastern[ ]Cooperative[ ]Oncology[ ]Group[\s\S]*\(ECOG\))
                                 | (ECOG) 
                                 ) 
 
                                 (\s*(performance)*[ ](scale|
+                                                      status[ ]\(PS\) |
                                                       status[ ]must[ ]be|
                                                       status[ ]within[ ]\d\d[ ]hours[ ]prior[ ]to[ ]induction[ ]chemotherapy|
                                                       status|
@@ -247,9 +250,11 @@ ecog_perf_re = re.compile(r""" (
                                 |(\d,[ ]{0,1}\d,[ ]{0,1}or[ ]{0,1}\d)
                                 |(\d,\d,[ ]\bor[ ]\d)
                                 |(\d,[ ]\d,[ ]\d)
+                                | (\d,[ ]\d)
                                 |(\d[ ]or\d)|(\d[ ]or[ ]\d)
                                 |(\d,[ ]{0,1}\d,[ ]{0,1}\d[,]{0,1}[ ]{0,1}or[ ]{0,1}\d)
                                 | \(\d\-\d\) 
+                                | \(\d[ ]-[ ]\d\)
                                 | (\d)
                                 ) 
 
@@ -446,7 +451,7 @@ for t in perf_trials_to_process:
                          '0,1 or 2', '≤ 2', '≤2', 'less than or equal to 2', '0, 1, 2','= 0, 1, or 2', '0 – 2','0- 2', '0, 1, 2','= 2','2']:
                 perf_norm_form = 'Performance Status <= 2'
                 perf_exp = parse_performance_string(perf_norm_form)
-            elif tstat in ['0-1', '=< 1', '0 to 1', '0 or 1', '0 or1', '< 2', '≤ 1', '0, 1', 'less than or equal to 1', '=< 0-1','0 – 1', '=< 0-1', '0 - 1']:
+            elif tstat in ['0-1', '=< 1', '0 to 1', '0 or 1', '0 or1', '< 2', '≤ 1', '0, 1', 'less than or equal to 1', '=< 0-1','0 – 1', '=< 0-1', '0 - 1','(0 - 1)','1']:
                 perf_norm_form = 'Performance Status <= 1'
                 perf_exp = parse_performance_string(perf_norm_form)
             elif tstat in ['0-3', '0‐3', '=< 3', '0, 1, 2, or 3', '0 to 3','0, 1, 2 or 3', '≤ 3', 'less than or equal to 3', '0‐3']:
