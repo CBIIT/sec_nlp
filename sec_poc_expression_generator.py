@@ -195,6 +195,8 @@ ecog_perf_re = re.compile(r""" (
                                 | (ECOG\-ACRIN)
                                 | (ECOG\/Zubrod) 
                                 | (Eastern[ ]Cooperation[ ]Oncology[ ]Group[ ]\(ECOG\))
+                                | (Eastern[ ]Collective[ ]Oncology[ ]Group[ ]\(ECOG\))
+                                | (Eastern[ ]Co-operative[ ]Oncology[ ]Group[ ]\(ECOG\)[ ]PS)
                                 | (Eastern[ ]Collaborative[ ]Oncology[ ]Group[ ]\(ECOG\))
                                 | (Eastern[ ]Cooperation[ ]Oncology[ ]Group[ ]\(ECOG\))
                                 | (Eastern[ ]Cooperative[ ]Oncology[ ]Group[ ]\(ECOG\)[ ]\(World[ ]Health[ ]Organization[ ]\[WHO\]/Gynecologic[ ]Oncology[ ]Group[ ]\[GOG\]/Zubrod[ ]score\))
@@ -206,15 +208,23 @@ ecog_perf_re = re.compile(r""" (
                                 | (Eastern[ ]Cooperative[ ]Group[ ]\(ECOG\)) 
                                 | (Gynecological[ ]Oncology[ ]Group[ ]\(GOG\)) 
                                  | (Gynecologic[ ]Oncology[ ]Group[ ]\(GOG\))
+                                 | (Eastern[ ]Cooperative[ ]Oncology[ ]Group/World[ ]Health[ ]Organization[ ]\(ECOG/WHO\) )
                                  |  (ECOG/WHO[ ]performance[ ]status) 
+                                    | (World[ ]Health[ ]Organization[ ]\(WHO\) )
                                 | (Eastern[ ]Cooperative[ ]Oncology[ ]Group[ ]\(ECOG\) ) 
                                 | (Eastern[ ]Cooperative[ ]Oncology[ ]Group[\s\S]*\(ECOG\))
                                 | (ECOG) 
+                                | (WHO) 
                                 ) 
 
                                 (\s*(performance)*[ ](scale|
+                                                        (performance[ ]status[ ]from)    | 
+                                                        status[ ]\(PS\)[ ]score[ ]of |
                                                       status[ ]\(PS\) |
+                                                       status[ ]\(ECOG-PS\) |
+                                                         status[ ]\(ECOG[ ]PS\)[ ]grade |
                                                       status[ ]must[ ]be|
+                                                      status[ ]is|
                                                       status[ ]within[ ]\d\d[ ]hours[ ]prior[ ]to[ ]induction[ ]chemotherapy|
                                                       status|
                                                       scores|
@@ -231,9 +241,12 @@ ecog_perf_re = re.compile(r""" (
                                 \s*
                                 (
                                   (\d[ ]\-[ ]\d) 
+                                  |  (\<\=[ ]\d[ ]or[ ]\d) 
                                   | (\=\<[ ]\d\-\d) 
                                  |(\d[ ]–[ ]\d) 
                                  |(\d-[ ]\d)
+                                  | (\<\=\d) 
+                                      | (\=[ ]\d[ ]or[ ]\d)
                                 | (\=\<\s*\d)  # =< 2 etc
                                 |(\d\-\d)  # 0-2 etc
                                  |(\d‐\d)
@@ -247,6 +260,7 @@ ecog_perf_re = re.compile(r""" (
                                 | (less[ ]than[ ]or[ ]equal[ ]to[ ]\d) 
                                 |(\d[ ]\bto[ ]\d) # 0 to 1 etc
                                 |(\d,[ ]{0,1}\d[ ]{0,1}or[ ]\d) 
+                                  | (\d,\d,\d) 
                                 |(\d,[ ]{0,1}\d,[ ]{0,1}or[ ]{0,1}\d)
                                 |(\d,\d,[ ]\bor[ ]\d)
                                 |(\d,[ ]\d,[ ]\d)
@@ -255,6 +269,7 @@ ecog_perf_re = re.compile(r""" (
                                 |(\d,[ ]{0,1}\d,[ ]{0,1}\d[,]{0,1}[ ]{0,1}or[ ]{0,1}\d)
                                 | \(\d\-\d\) 
                                 | \(\d[ ]-[ ]\d\)
+                                | (\d/\d)
                                 | (\d)
                                 ) 
 
@@ -448,10 +463,10 @@ for t in perf_trials_to_process:
            # hiv_norm_form = 'HIV Positive (C15175)'
             tstat = ecog_groups[len(ecog_groups)-1]
             if tstat in ['0-2', '0 - 2', '0 – 2','0- 2', '=< 2', '0, 1, or 2', '0 to 2', '< 3', '0, 1 or 2',
-                         '0,1 or 2', '≤ 2', '≤2', 'less than or equal to 2', '0, 1, 2','= 0, 1, or 2', '0 – 2','0- 2', '0, 1, 2','= 2','2']:
+                         '0,1 or 2', '≤ 2', '≤2', 'less than or equal to 2', '0, 1, 2','= 0, 1, or 2', '0 – 2','0- 2', '0, 1, 2','= 2','2','<=2','<= 1 or 2','(0-2)','0,1, or 2', '0,1,2']:
                 perf_norm_form = 'Performance Status <= 2'
                 perf_exp = parse_performance_string(perf_norm_form)
-            elif tstat in ['0-1', '=< 1', '0 to 1', '0 or 1', '0 or1', '< 2', '≤ 1', '0, 1', 'less than or equal to 1', '=< 0-1','0 – 1', '=< 0-1', '0 - 1','(0 - 1)','1']:
+            elif tstat in ['0-1', '=< 1', '0 to 1', '0 or 1', '0 or1', '< 2', '≤ 1', '0, 1', 'less than or equal to 1', '=< 0-1','0 – 1', '=< 0-1', '0 - 1','(0 - 1)','1','0/1','≤1','= 0 or 1']:
                 perf_norm_form = 'Performance Status <= 1'
                 perf_exp = parse_performance_string(perf_norm_form)
             elif tstat in ['0-3', '0‐3', '=< 3', '0, 1, 2, or 3', '0 to 3','0, 1, 2 or 3', '≤ 3', 'less than or equal to 3', '0‐3']:
