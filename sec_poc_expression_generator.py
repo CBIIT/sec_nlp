@@ -206,18 +206,24 @@ ecog_perf_re = re.compile(r""" (
                                   | (Eastern[ ]Cooperative[ ]Oncology[ ]Group[\n]\(ECOG\)) 
                                 | (Eastern[ ]Cooperative[ ]Oncology[ ]Group) 
                                 | (Eastern[ ]Cooperative[ ]Group[ ]\(ECOG\)) 
+                                 | (Eastern[ ]Cooperative[ ]Group)
+
                                 | (Gynecological[ ]Oncology[ ]Group[ ]\(GOG\)) 
                                  | (Gynecologic[ ]Oncology[ ]Group[ ]\(GOG\))
                                  | (Eastern[ ]Cooperative[ ]Oncology[ ]Group/World[ ]Health[ ]Organization[ ]\(ECOG/WHO\) )
+                                     | (Eastern[ ]Cooperative[ ]Oncology[ ]Group[ ]\(ECOG\)[ ]\(World[ ]Health[ ]Organization[ ]\[WHO\]\))
                                  |  (ECOG/WHO[ ]performance[ ]status) 
                                     | (World[ ]Health[ ]Organization[ ]\(WHO\) )
+                                   |(World[ ]Health[ ]Organization)
                                 | (Eastern[ ]Cooperative[ ]Oncology[ ]Group[ ]\(ECOG\) ) 
                                 | (Eastern[ ]Cooperative[ ]Oncology[ ]Group[\s\S]*\(ECOG\))
                                 | (ECOG) 
                                 | (WHO) 
+                                | (GOG)
                                 ) 
 
-                                (\s*(performance)*[ ](scale|
+                                (\s*(performance)*[ ]( scale[ ]performance[ ]status[ ]of |
+                                                        scale|
                                                         (performance[ ]status[ ]from)    | 
                                                         status[ ]\(PS\)[ ]score[ ]of |
                                                       status[ ]\(PS\) |
@@ -225,7 +231,9 @@ ecog_perf_re = re.compile(r""" (
                                                          status[ ]\(ECOG[ ]PS\)[ ]grade |
                                                       status[ ]must[ ]be|
                                                       status[ ]is|
+                                                       status[ ]that[ ]is[ ]either |
                                                       status[ ]within[ ]\d\d[ ]hours[ ]prior[ ]to[ ]induction[ ]chemotherapy|
+                                                       status[ ]within |
                                                       status|
                                                       scores|
                                                       status[ ]score
@@ -241,6 +249,7 @@ ecog_perf_re = re.compile(r""" (
                                 \s*
                                 (
                                   (\d[ ]\-[ ]\d) 
+                                   | (\d\‒\d) 
                                   |  (\<\=[ ]\d[ ]or[ ]\d) 
                                   | (\=\<[ ]\d\-\d) 
                                  |(\d[ ]–[ ]\d) 
@@ -254,6 +263,7 @@ ecog_perf_re = re.compile(r""" (
                                 | (\>\=\s*\d )# >= 2 etc
                                 | (\=\<\s*\d-\d)  # =< 0-1 glop
                                 | (\=[ ]\d,[ ]\d,[ ]or[ ]\d)
+                                 | (\=[ ]\d-\d)
                                 | (\=\s*\d)
                                 | (≤\s*\d)
                                 | (less[ ]than[ ]or[ ]equal[ ]to[ ]\d-\d) 
@@ -268,6 +278,7 @@ ecog_perf_re = re.compile(r""" (
                                 |(\d[ ]or\d)|(\d[ ]or[ ]\d)
                                 |(\d,[ ]{0,1}\d,[ ]{0,1}\d[,]{0,1}[ ]{0,1}or[ ]{0,1}\d)
                                 | \(\d\-\d\) 
+                                | (\d–\d)
                                 | \(\d[ ]-[ ]\d\)
                                 | (\d/\d)
                                 | (\d)
@@ -281,26 +292,32 @@ karnofsky_lansky_perf_re = re.compile(r"""
                                  (\bkarnofsky|\blansky)
                                  \s*
                                  (     (\bperformance[ ]status[ ]\(kps\)[ ]score[ ]of)
+                                  | (performance[ ]\(KPS\)[ ]status) 
                                      |(\bperformance[ ]status[ ]\(kps\)[ ]of)
                                       |(\bperformance[ ]scale[ ]score)
 									 |(\bperformance[ ]scale[ ]of)
 									 |(\bperformance[ ]status[ ]score[ ]of)
+									  | (performance[ ]status[ ]score[ ]\(KPS\)[ ]of)
 									  |(\bperformance[ ]status[ ]of)
                                     |(\bperformance[ ]score[ ]of)
+                                     | (score[ ]of) 
                                     |(\bperformance[ ]score[ ]\(kps\))
                                      |(\bperformance[ ]scale[ ]\(kps\))
                                     |(\bperformance[ ]status[ ]score)
                                       |(\bperformance[ ]status[ ]\(kps\))
+                                        |(performance[ ]score[ ]must[ ]be)
+                                         | (Performance[ ]Status[ ]\(KPS\)[ ]must[ ]be)
                                     |(\bperformance[ ]scale)
                                     |(\bperformance[ ]status)
                                     |(\bperformance[ ]score)
+                                       |(\bperformance)
                                     |(\bscore)
                                   )*
 
                                  \s
                                   (\>\=|\=\>|\>\=|\=\<|\<\=|\<|\>|≥|≤|greater[ ]than[ ]or[ ]equal[ ]to|greater[ ]than|at[ ]least)
                                  \s*
-                                 (\d\d)
+                                 (\d\d)\%{0,1}
                                  \s*
 
 """
@@ -463,10 +480,10 @@ for t in perf_trials_to_process:
            # hiv_norm_form = 'HIV Positive (C15175)'
             tstat = ecog_groups[len(ecog_groups)-1]
             if tstat in ['0-2', '0 - 2', '0 – 2','0- 2', '=< 2', '0, 1, or 2', '0 to 2', '< 3', '0, 1 or 2',
-                         '0,1 or 2', '≤ 2', '≤2', 'less than or equal to 2', '0, 1, 2','= 0, 1, or 2', '0 – 2','0- 2', '0, 1, 2','= 2','2','<=2','<= 1 or 2','(0-2)','0,1, or 2', '0,1,2']:
+                         '0,1 or 2', '≤ 2', '≤2', 'less than or equal to 2', '0, 1, 2','= 0, 1, or 2', '0 – 2','0- 2', '0, 1, 2','= 2','2','<=2','<= 1 or 2','(0-2)','0,1, or 2', '0,1,2','= 0-2','0‒2']:
                 perf_norm_form = 'Performance Status <= 2'
                 perf_exp = parse_performance_string(perf_norm_form)
-            elif tstat in ['0-1', '=< 1', '0 to 1', '0 or 1', '0 or1', '< 2', '≤ 1', '0, 1', 'less than or equal to 1', '=< 0-1','0 – 1', '=< 0-1', '0 - 1','(0 - 1)','1','0/1','≤1','= 0 or 1']:
+            elif tstat in ['0-1', '=< 1', '0 to 1', '0 or 1', '0 or1', '< 2', '≤ 1', '0, 1', 'less than or equal to 1', '=< 0-1','0 – 1', '=< 0-1', '0 - 1','(0 - 1)','1','0/1','≤1','= 0 or 1', '0- 1', '0–1']:
                 perf_norm_form = 'Performance Status <= 1'
                 perf_exp = parse_performance_string(perf_norm_form)
             elif tstat in ['0-3', '0‐3', '=< 3', '0, 1, 2, or 3', '0 to 3','0, 1, 2 or 3', '≤ 3', 'less than or equal to 3', '0‐3']:
