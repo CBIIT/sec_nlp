@@ -5,7 +5,6 @@ import datetime
 import argparse
 
 
-
 def check_for_concepts(con, nct_id, criteria_type_id, ncit_codes, inclusion_indicator, ncit_codes_to_remove = '', include_descendants = True):
 
     if include_descendants:
@@ -140,8 +139,10 @@ for trial in trials_to_classify:
 
 
     # PT -- need to split these out for inc/exclusion
-    check_for_concepts(con, nct_id , 36, ['C62634','C15313', 'C15329'],1)  # PT INC
-    check_for_concepts(con, nct_id , 37, ['C62634','C15313', 'C15329'],0)  # PT EXC
+   # check_for_concepts(con, nct_id , 36, ['C62634','C15313', 'C15329'],1)  # PT INC
+   # check_for_concepts(con, nct_id , 37, ['C62634','C15313', 'C15329'],0)  # PT EXC
+    check_for_concepts(con, nct_id, 36, ['C25218', 'C1908', 'C62634', 'C163758'], 1,ncit_codes_to_remove= ['C25294'])  # PT INC, remove lab procedures
+    check_for_concepts(con, nct_id, 37, ['C25218', 'C1908', 'C62634', 'C163758'],0, ncit_codes_to_remove= ['C25294'])  # PT EXC, remove lab procedures
 
 
     cur.execute('select count(*) from trial_nlp_dates where nct_id = ?', [nct_id] )

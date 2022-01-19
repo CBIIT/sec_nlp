@@ -187,7 +187,7 @@ ecog_perf_re = re.compile(r""" (
                                 #|  (\(*\bzubrod\)* ) 
                                  (Eastern[ ]Cooperative[ ]Oncology[ ]Group[ ]\(ECOG\)[ ]\(Zubrod\))
                                 | (most[ ]recent[ ]zubrod)
-
+                               | (Zubrod[ ]\(Eastern[ ]Cooperative[ ]Oncology[ ]Group[ ]\[ECOG\]\) )
                                  |  (zubrod) 
                                 | (Eastern[ ]Cooperative[ ]Oncology[ ]Group[ ]\(ECOG\)[ ]-[ ]American[ ]College[ ]of[ ]Radiology[ ]Imaging[ ]Network[ ]\(ACRIN\))
                                 | (Eastern[ ]Cooperative[ ]Oncology[ ]Group[ ]\(ECOG\)-American[ ]College[ ]of[ ]Radiology[ ]Imaging[ ]Network[ ]\(ACRIN\))
@@ -223,6 +223,8 @@ ecog_perf_re = re.compile(r""" (
                                 ) 
 
                                 (\s*(performance)*[ ]( scale[ ]performance[ ]status[ ]of |
+                                                        status[ ]scores[ ]of |
+                                                        status[ ]scale |
                                                         scale|
                                                         (performance[ ]status[ ]from)    | 
                                                         status[ ]\(PS\)[ ]score[ ]of |
@@ -251,11 +253,13 @@ ecog_perf_re = re.compile(r""" (
                                   (\d[ ]\-[ ]\d) 
                                    | (\d\‒\d) 
                                   |  (\<\=[ ]\d[ ]or[ ]\d) 
+                                   | (\d\,[ ]or[ ]\d)
+                                   # |(\d[ ]or[ ]less)
                                   | (\=\<[ ]\d\-\d) 
                                  |(\d[ ]–[ ]\d) 
                                  |(\d-[ ]\d)
                                   | (\<\=\d) 
-                                      | (\=[ ]\d[ ]or[ ]\d)
+                                     | (\=[ ]\d[ ]or[ ]\d)
                                 | (\=\<\s*\d)  # =< 2 etc
                                 |(\d\-\d)  # 0-2 etc
                                  |(\d‐\d)
@@ -289,9 +293,10 @@ ecog_perf_re = re.compile(r""" (
                           , re.VERBOSE | re.IGNORECASE | re.UNICODE | re.MULTILINE)
 
 karnofsky_lansky_perf_re = re.compile(r"""
-                                 (\bkarnofsky|\blansky)
+                                 (\bKarnofsky[ ]or[ ]Lansky[ ]\(age-dependent\)|\bkarnofsky|\bkarnofsky[ ]\(kps\)|\blansky|\bkps)
                                  \s*
                                  (     (\bperformance[ ]status[ ]\(kps\)[ ]score[ ]of)
+                                   |(\bperformance[ ]status[ ]\(kps\)[ ]score)
                                   | (performance[ ]\(KPS\)[ ]status) 
                                      |(\bperformance[ ]status[ ]\(kps\)[ ]of)
                                       |(\bperformance[ ]scale[ ]score)
@@ -310,13 +315,15 @@ karnofsky_lansky_perf_re = re.compile(r"""
                                     |(\bperformance[ ]scale)
                                     |(\bperformance[ ]status)
                                     |(\bperformance[ ]score)
+                                     |(\bfunctional[ ]score[ ]of)
                                        |(\bperformance)
                                     |(\bscore)
+                                    |(\bof)
                                   )*
-
                                  \s
-                                  (\>\=|\=\>|\>\=|\=\<|\<\=|\<|\>|≥|≤|greater[ ]than[ ]or[ ]equal[ ]to|greater[ ]than|at[ ]least)
+                                  (\>\=[ ]to|\>\=|\=\>|\>\=|\=\<|\<\=|\<|\>|≥|≤|greater[ ]than[ ]or[ ]equal[ ]to|greater[ ]than|at[ ]least)?
                                  \s*
+
                                  (\d\d)\%{0,1}
                                  \s*
 
@@ -483,10 +490,10 @@ for t in perf_trials_to_process:
                          '0,1 or 2', '≤ 2', '≤2', 'less than or equal to 2', '0, 1, 2','= 0, 1, or 2', '0 – 2','0- 2', '0, 1, 2','= 2','2','<=2','<= 1 or 2','(0-2)','0,1, or 2', '0,1,2','= 0-2','0‒2']:
                 perf_norm_form = 'Performance Status <= 2'
                 perf_exp = parse_performance_string(perf_norm_form)
-            elif tstat in ['0-1', '=< 1', '0 to 1', '0 or 1', '0 or1', '< 2', '≤ 1', '0, 1', 'less than or equal to 1', '=< 0-1','0 – 1', '=< 0-1', '0 - 1','(0 - 1)','1','0/1','≤1','= 0 or 1', '0- 1', '0–1']:
+            elif tstat in ['0-1', '=< 1', '0 to 1', '0 or 1', '0 or1', '< 2', '≤ 1', '0, 1', 'less than or equal to 1', '=< 0-1','0 – 1', '=< 0-1', '0 - 1','(0 - 1)','1','0/1','≤1','= 0 or 1', '0- 1', '0–1','0, or 1']:
                 perf_norm_form = 'Performance Status <= 1'
                 perf_exp = parse_performance_string(perf_norm_form)
-            elif tstat in ['0-3', '0‐3', '=< 3', '0, 1, 2, or 3', '0 to 3','0, 1, 2 or 3', '≤ 3', 'less than or equal to 3', '0‐3']:
+            elif tstat in ['0-3', '0‐3', '=< 3', '0, 1, 2, or 3', '0 to 3','0, 1, 2 or 3', '≤ 3', 'less than or equal to 3', '0‐3','3 or less','3']:
                 perf_norm_form = 'Performance Status <= 3'
                 perf_exp = parse_performance_string(perf_norm_form)
             elif tstat in ['2-3', '2 to 3', '2 or 3']:
@@ -519,9 +526,11 @@ for t in perf_trials_to_process:
                     if int(karnofsky_score) in karnofsky_to_ecog:
                         ecog_equivalent = karnofsky_to_ecog[int(karnofsky_score)]
                         # (\>\=|\=\>|\>\=|\=\<|\<\=|\<|\>|≥|≤)
-                        if relational in ['>=', '=>', '>','≥' , 'greater than', 'greater than or equal to', 'at least']:
-                            perf_norm_form = 'Performance Status <= '+str(ecog_equivalent)
-                            perf_exp = parse_performance_string(perf_norm_form)
+                        # if relational in ['>=', '=>', '>','≥' , 'greater than', 'greater than or equal to', 'at least']:
+                        #     perf_norm_form = 'Performance Status <= '+str(ecog_equivalent)
+                        #     perf_exp = parse_performance_string(perf_norm_form)
+                        perf_norm_form = 'Performance Status <= '+str(ecog_equivalent)
+                        perf_exp = parse_performance_string(perf_norm_form)
 
         cur.execute("""update candidate_criteria set candidate_criteria_norm_form = ?, candidate_criteria_expression = ? , 
                                      generated_date = ?, marked_done_date = NULL 
