@@ -3,6 +3,9 @@ from spacy.matcher import PhraseMatcher
 import sqlite3
 import datetime
 import argparse
+from functools import lru_cache
+
+
 import sys
 
 nlp = spacy.blank("en")
@@ -94,15 +97,31 @@ order by nct_id, display_order
 ins_code_sql = """
     insert into ncit_nlp_concepts(nct_id, display_order, ncit_code, span_text, start_index, end_index) values (?,?,?,?,?,?)
 """
-get_best_ncit_code_sql_for_span = """
-select code from ncit where lower(pref_name) = ? and 
-lower(pref_name) not in ('i', 'ii', 'iii', 'iv', 'v', 'set', 'all', 'at', 'is', 'and', 'or', 'to', 'a', 'be', 'for', 'an', 'as', 'in', 'of', 'x', 'are', 'no', 'any', 'on', 'who', 'have', 't', 'who', 'at') 
-"""
 
-get_ncit_code_sql_for_span = """
-select distinct code from ncit_syns where l_syn_name = ? and
- l_syn_name not in ('i', 'ii', 'iii', 'iv', 'v', 'set', 'all' , 'at', 'is', 'and', 'or', 'to', 'a', 'be', 'for', 'an', 'as', 'in', 'of', 'x', 'are', 'no', 'any', 'on', 'who', 'have', 't', 'who', 'at') 
-"""
+@lru_cache(maxsize=10000)
+def get_best_ncit_code_for_span(con, a_span):
+
+    get_best_ncit_code_sql_for_span = """
+    select code from ncit where lower(pref_name) = ? and 
+    lower(pref_name) not in ('i', 'ii', 'iii', 'iv', 'v', 'set', 'all', 'at', 'is', 'and', 'or', 'to', 'a', 'be', 'for', 'an', 'as', 'in', 'of', 'x', 'are', 'no', 'any', 'on', 'who', 'have', 't', 'who', 'at') 
+    """
+    cur = con.cursor()
+    cur.execute(get_best_ncit_code_sql_for_span, [a_span])
+    rs = cur.fetchall()
+    return rs
+
+@lru_cache(maxsize=10000)
+def get_all_ncit_codes_for_span(con, a_span):
+
+    get_ncit_code_sql_for_span = """
+    select distinct code from ncit_syns where l_syn_name = ? and
+     l_syn_name not in ('i', 'ii', 'iii', 'iv', 'v', 'set', 'all' , 'at', 'is', 'and', 'or', 'to', 'a', 'be', 'for', 'an', 'as', 'in', 'of', 'x', 'are', 'no', 'any', 'on', 'who', 'have', 't', 'who', 'at') 
+    """
+    cur = con.cursor()
+    cur.execute(get_ncit_code_sql_for_span, [a_span])
+    rs = cur.fetchall()
+    return rs
+
 cur.execute(get_trials_sql)
 con.commit()
 trial_list_for_processing = cur.fetchall()
@@ -124,8 +143,6 @@ for t in trial_list_for_processing:
     cur.execute("delete from ncit_nlp_concepts where nct_id = ? ", [t[0]])
     for crit in crits:
         doc = nlp(crit[2])
-
-
         matches = matcher(doc)
         spans = []
         for match_id, start, end in matches:
@@ -145,14 +162,16 @@ for t in trial_list_for_processing:
                 is_a_float = False
 
             if(not is_a_float):
-                cur.execute(get_best_ncit_code_sql_for_span, [f.lower_])
-                bcodes = cur.fetchall()
+                #cur.execute(get_best_ncit_code_sql_for_span, [f.lower_])
+               # bcodes = cur.fetchall()
+                bcodes = get_best_ncit_code_for_span(con, f.lower_)
                 if len(bcodes) > 0:
                     for one_code in bcodes :
                         cur.execute(ins_code_sql, [crit[0], crit[1], one_code[0], f.lower_, f.start_char, f.end_char])
                 else:
-                    cur.execute(get_ncit_code_sql_for_span, [f.lower_])
-                    rcodes = cur.fetchall()
+                    #cur.execute(get_ncit_code_sql_for_span, [f.lower_])
+                    #rcodes = cur.fetchall()
+                    rcodes = get_all_ncit_codes_for_span(con, f.lower_)
                     for one_code in rcodes:
                         cur.execute(ins_code_sql, [crit[0], crit[1], one_code[0], f.lower_, f.start_char, f.end_char])
         #con.commit()
