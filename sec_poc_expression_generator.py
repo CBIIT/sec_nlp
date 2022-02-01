@@ -330,6 +330,81 @@ karnofsky_lansky_perf_re = re.compile(r"""
 """
                                       , re.VERBOSE | re.IGNORECASE | re.UNICODE | re.MULTILINE)
 
+
+plain_perf_re = re.compile(r""" 
+
+                                (\s*(performance)*[ ](
+                                                       scale[ ]performance[ ]status[ ]of |
+                                                       status[ ]scores[ ]of |
+                                                       status[ ]scale |
+                                                       scale|
+                                                      (performance[ ]status[ ]from)    |         
+                                                       status[ ]\(PS\)[ ]score[ ]of |
+                                                      status[ ]\(PS\) |
+                                                      status[ ]\(ECOG[ ]PS\)[ ]grade |
+                                                      status[ ]\(ECOG-PS\) |
+                                                      status[ ]must[ ]be|
+                                                       status[ ]is|
+                                                       status[ ]that[ ]is[ ]either |
+                                                      status[ ]within[ ]\d\d[ ]hours[ ]prior[ ]to[ ]induction[ ]chemotherapy|
+                                                      status[ ]within |
+                                                      status|
+                                                      scores|
+                                                      status[ ]score
+                                                      |status[ ]grade|score|)(of)*(\:)*(must[ ]be)* )
+                                 ([ ]\(PS\))*
+                               #  #([ ]\(\d{1,3}\))| ([ ]\(PS\))*
+                               # ([ ]{0,1}\bmust[ ]be)*
+                               # # \s*(\bbetween)*\s*(\bof)*(\(PS\))*(\bof)*\:* # first group -  ecog name stuff - ecog with an optional closing paren , performance and then scale or status
+                               ( (\s*(\bbetween)*)
+                               | (\s*(\bof)*(\(PS\))*))
+                               #|(\bof*\:*))* # first group -  ecog name stuff - ecog with an optional closing paren , performance and then scale or status
+#
+                                \s*
+                                (
+                                  (\d[ ]\-[ ]\d) 
+                                  | (\=\<[ ]\d\-\d) 
+                                  |  (\<\=[ ]\d[ ]or[ ]\d) 
+                                  | (\<\=\d) 
+                                  | (\=[ ]\d[ ]or[ ]\d)
+                                  | (\d\,[ ]or[ ]\d)
+                                  | (\d[\s\S]*or[ ]\d)
+                               #   |(\d[ ]or[ ]less)
+                                 |(\d[ ]–[ ]\d) 
+                                 | (\d\‒\d) 
+                                 |(\d-[ ]\d)
+                                | (\=\<\s*\d)  # =< 2 etc
+                                |(\d\-\d)  # 0-2 etc
+                                 |(\d‐\d)
+                                | (\<\s*\d )
+                                | (\>\=\s*\d )# >= 2 etc
+                                | (\=\<\s*\d-\d)  # =< 0-1 glop
+                                | (\=[ ]\d,[ ]\d,[ ]or[ ]\d)
+                                | (\=[ ]\d-\d)
+                                | (\=\s*\d)
+                                | (≤\s*\d)
+                                | (less[ ]than[ ]or[ ]equal[ ]to[ ]\d-\d) 
+                                | (less[ ]than[ ]or[ ]equal[ ]to[ ]\d) 
+                                |(\d[ ]\bto[ ]\d) # 0 to 1 etc
+                                |(\d,[ ]{0,1}\d[ ]{0,1}or[ ]\d) 
+                                | (\d,\d,\d) 
+                                |(\d,[ ]{0,1}\d,[ ]{0,1}or[ ]{0,1}\d)
+                                |(\d,\d,[ ]\bor[ ]\d)
+                                |(\d,[ ]\d,[ ]\d)
+                                | (\d,[ ]\d)
+                                |(\d[ ]or\d)|(\d[ ]or[ ]\d)
+                                |(\d,[ ]{0,1}\d,[ ]{0,1}\d[,]{0,1}[ ]{0,1}or[ ]{0,1}\d)
+                                | \(\d\-\d\) 
+                                | (\d–\d)
+                                | \(\d[ ]-[ ]\d\)
+                                | (\d/\d)
+                                | (\d)
+                                ) 
+
+                               # \s*
+"""
+                          , re.VERBOSE | re.IGNORECASE | re.UNICODE | re.MULTILINE)
+
 cand_sql = """
 select nct_id, criteria_type_id, inclusion_indicator, candidate_criteria_text, display_order from
 candidate_criteria where criteria_type_id = ?  and nct_id = ?
@@ -437,6 +512,36 @@ for t in brain_mets_trials_to_process:
                    """, [brain_mets_norm_form, brain_mets_exp, datetime.datetime.now(), t[0], 35, t[1]])
     i = i + 1
     con.commit()
+#
+#  Performance status
+#
+def normalize_ecog_perf_status(tstat):
+
+    if tstat in ['0-2', '0 - 2', '0 – 2', '0- 2', '=< 2', '0, 1, or 2', '0 to 2', '< 3', '0, 1 or 2',
+                 '0,1 or 2', '≤ 2', '≤2', 'less than or equal to 2', '0, 1, 2', '= 0, 1, or 2', '0 – 2', '0- 2',
+                 '0, 1, 2', '= 2', '2', '<=2', '<= 1 or 2', '(0-2)', '0,1, or 2', '0,1,2', '= 0-2', '0‒2']:
+        perf_norm_form = 'Performance Status <= 2'
+        perf_exp = parse_performance_string(perf_norm_form)
+    elif tstat in ['0-1', '=< 1', '0 to 1', '0 or 1', '0 or1', '< 2', '≤ 1', '0, 1', 'less than or equal to 1',
+                   '=< 0-1', '0 – 1', '=< 0-1', '0 - 1', '(0 - 1)', '1', '0/1', '≤1', '= 0 or 1', '0- 1', '0–1',
+                   '0, or 1']:
+        perf_norm_form = 'Performance Status <= 1'
+        perf_exp = parse_performance_string(perf_norm_form)
+    elif tstat in ['0-3', '0‐3', '=< 3', '0, 1, 2, or 3', '0 to 3', '0, 1, 2 or 3', '≤ 3', 'less than or equal to 3',
+                   '0‐3', '3 or less', '3']:
+        perf_norm_form = 'Performance Status <= 3'
+        perf_exp = parse_performance_string(perf_norm_form)
+    elif tstat in ['2-3', '2 to 3', '2 or 3']:
+        perf_norm_form = ' 2 <= Performance Status <= 3'
+        perf_exp = 'NO MATCH'
+    elif tstat in ['0-4', '=< 4', '0, 1, 2, 3 or 4', '0 to 4', '≤ 4', 'less than or equal to 4']:
+        perf_norm_form = 'Performance Status <= 4'
+        perf_exp = parse_performance_string(perf_norm_form)
+    else:
+        perf_norm_form = 'NO MATCH'
+        perf_exp = 'NO MATCH'
+
+    return [perf_norm_form, perf_exp]
 
 perf_trials_to_process_sql = """
 select  distinct cc.nct_id
@@ -486,25 +591,8 @@ for t in perf_trials_to_process:
           #  hiv_exp = "check_if_any('C15175') == 'YES'"
            # hiv_norm_form = 'HIV Positive (C15175)'
             tstat = ecog_groups[len(ecog_groups)-1]
-            if tstat in ['0-2', '0 - 2', '0 – 2','0- 2', '=< 2', '0, 1, or 2', '0 to 2', '< 3', '0, 1 or 2',
-                         '0,1 or 2', '≤ 2', '≤2', 'less than or equal to 2', '0, 1, 2','= 0, 1, or 2', '0 – 2','0- 2', '0, 1, 2','= 2','2','<=2','<= 1 or 2','(0-2)','0,1, or 2', '0,1,2','= 0-2','0‒2']:
-                perf_norm_form = 'Performance Status <= 2'
-                perf_exp = parse_performance_string(perf_norm_form)
-            elif tstat in ['0-1', '=< 1', '0 to 1', '0 or 1', '0 or1', '< 2', '≤ 1', '0, 1', 'less than or equal to 1', '=< 0-1','0 – 1', '=< 0-1', '0 - 1','(0 - 1)','1','0/1','≤1','= 0 or 1', '0- 1', '0–1','0, or 1']:
-                perf_norm_form = 'Performance Status <= 1'
-                perf_exp = parse_performance_string(perf_norm_form)
-            elif tstat in ['0-3', '0‐3', '=< 3', '0, 1, 2, or 3', '0 to 3','0, 1, 2 or 3', '≤ 3', 'less than or equal to 3', '0‐3','3 or less','3']:
-                perf_norm_form = 'Performance Status <= 3'
-                perf_exp = parse_performance_string(perf_norm_form)
-            elif tstat in ['2-3', '2 to 3', '2 or 3']:
-                perf_norm_form = ' 2 <= Performance Status <= 3'
-                perf_exp = 'NO MATCH'
-            elif tstat in ['0-4', '=< 4', '0, 1, 2, 3 or 4', '0 to 4', '≤ 4', 'less than or equal to 4']:
-                perf_norm_form = 'Performance Status <= 4'
-                perf_exp = parse_performance_string(perf_norm_form)
-            else:
-                perf_norm_form = 'NO MATCH'
-                perf_exp = 'NO MATCH'
+            [perf_norm_form, perf_exp] = normalize_ecog_perf_status(tstat)
+
 
             print(perf_norm_form, perf_exp)
 
@@ -531,6 +619,26 @@ for t in perf_trials_to_process:
                         #     perf_exp = parse_performance_string(perf_norm_form)
                         perf_norm_form = 'Performance Status <= '+str(ecog_equivalent)
                         perf_exp = parse_performance_string(perf_norm_form)
+            else:
+                # look for just plain old performance status < 2 etc.
+                print('looking for plain performance status')
+                g = plain_perf_re.search(pc[3])
+                # print(pc[3])
+                print(g)
+                if g is not None:
+                    newgroups = [s.strip() if s is not None else None for s in g.groups()]
+                    ecog_groups = list(dict.fromkeys([i for i in newgroups if i]))
+                    print(newgroups)
+                    print(ecog_groups)
+                    #  hiv_exp = "check_if_any('C15175') == 'YES'"
+                    # hiv_norm_form = 'HIV Positive (C15175)'
+                    tstat = ecog_groups[len(ecog_groups) - 1]
+                    [perf_norm_form, perf_exp] = normalize_ecog_perf_status(tstat)
+
+                    print(perf_norm_form, perf_exp)
+
+
+
 
         cur.execute("""update candidate_criteria set candidate_criteria_norm_form = ?, candidate_criteria_expression = ? , 
                                      generated_date = ?, marked_done_date = NULL 
