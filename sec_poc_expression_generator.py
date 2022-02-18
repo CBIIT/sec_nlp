@@ -649,4 +649,91 @@ for t in perf_trials_to_process:
     i = i + 1
     con.commit()
 
+
+# Biomarkers
+
+biomarker_codes_sql = """
+with d_codes as 
+(
+select descendant as ncit_code from ncit_tc
+where parent in ('C3910','C16612', 'C26548') and 
+descendant not in ('C17021', 'C113245','C117187','C16676','C16307','C16612','C17275','C2273',
+'C2280','C25184','C16554','C20424','C28597','C16295','C18106','C20493', 'C25202','C25293')
+)
+select sv.ncit_code, sv.display_order, sv.pref_name   
+from strict_nlp_data_view sv join d_codes d on 
+sv.ncit_code = d.ncit_code where nct_id = ? and display_order = ?
+"""
+
+biomarker_trials_to_process_sql = """
+select  distinct cc.nct_id
+from candidate_criteria cc join trial_nlp_dates nlp on cc.nct_id = nlp.nct_id
+where (cc.generated_date is  NULL or cc.generated_date < nlp.classification_date) and cc.criteria_type_id in (1)
+
+"""
+biomarker_cand_sql = """
+select nct_id, criteria_type_id, inclusion_indicator, candidate_criteria_text, display_order from
+candidate_criteria where criteria_type_id = 1  and nct_id = ?
+"""
+cur.execute(biomarker_trials_to_process_sql)
+biomarker_trials_to_process = cur.fetchall()
+print("Processing Biomarker expressions")
+i = 1
+for t in biomarker_trials_to_process:
+    print('Processing ', t[0], ' trial ', str(i), 'of', len(biomarker_trials_to_process))
+    cur.execute(biomarker_cand_sql, [t[0]])
+    biomarker_cands = cur.fetchall()
+    for bc in biomarker_cands:
+        cur.execute(biomarker_codes_sql, [bc[0], bc[4]])
+        t_codes = cur.fetchall()
+        print(t_codes)
+        biomarker_norm_form = 'NO MATCH'
+        biomarker_exp = None
+        if len(t_codes) > 0:
+            c_str = ["check_if_any('" + c[0] + "') == 'YES'" for c in t_codes]
+            biomarker_norm_form = str([c[0]+" - " + c[2] for c in t_codes])
+            biomarker_exp = " || ".join(c_str)
+        cur.execute("""update candidate_criteria set candidate_criteria_norm_form = ?, candidate_criteria_expression = ? , 
+                                      generated_date = ?, marked_done_date = NULL 
+    
+                                         where nct_id = ? and criteria_type_id = ? and display_order = ?
+                                      """, [biomarker_norm_form, biomarker_exp, datetime.datetime.now(), bc[0], 1, bc[4]])
+
+        con.commit()
+    i = i + 1
+
+
+disease_trials_to_process_sql = """
+select  distinct cc.nct_id
+from candidate_criteria cc join trial_nlp_dates nlp on cc.nct_id = nlp.nct_id
+where (cc.generated_date is  NULL or cc.generated_date < nlp.classification_date) and cc.criteria_type_id in (38)
+"""
+cur.execute(disease_trials_to_process_sql)
+disease_trials_to_process = cur.fetchall()
+disease_cand_sql = """
+select nct_id, criteria_type_id, inclusion_indicator, candidate_criteria_text, display_order from
+candidate_criteria where criteria_type_id = 38  and nct_id = ?
+"""
+
+disease_codes_sql = """
+with d_codes as 
+(
+select descendant as ncit_code from ncit_tc
+where parent in ('C2916') 
+)
+select sv.ncit_code, sv.display_order, sv.pref_name   
+from strict_nlp_data_view sv join d_codes d on 
+sv.ncit_code = d.ncit_code where nct_id = ? and display_order = ?
+"""
+i = 1
+for t in disease_trials_to_process:
+    print('Processing ', t[0], ' trial ', str(i), 'of', len(disease_trials_to_process))
+    cur.execute(disease_cand_sql, [t[0]])
+    disease_cands = cur.fetchall()
+    for dc in disease_cands:
+        cur.execute(disease_codes_sql, [dc[0], dc[4]])
+        t_codes = cur.fetchall()
+        print(t_codes)
+    i = i + 1
+
 con.close()
