@@ -4,7 +4,49 @@ import collections
 import argparse
 import datetime
 from create_performance_expression import parse_performance_string
+from common_funcs import get_criteria_type_map
 
+
+def generate_ont_expression(con, criteria_type_id, get_codes_sql):
+
+
+    get_trials_to_process_sql = """
+    select  distinct cc.nct_id
+    from candidate_criteria cc join trial_nlp_dates nlp on cc.nct_id = nlp.nct_id
+    where (cc.generated_date is  NULL or cc.generated_date < nlp.classification_date) and cc.criteria_type_id in (?)
+
+    """
+    cand_sql = """
+    select nct_id, criteria_type_id, inclusion_indicator, candidate_criteria_text, display_order from
+    candidate_criteria where criteria_type_id = ?  and nct_id = ?
+    """
+    cur.execute(get_trials_to_process_sql, [criteria_type_id])
+    trials_to_process = cur.fetchall()
+    print("Processing expressions for criteria_type_id : ", str(criteria_type_id))
+    i = 1
+    for t in trials_to_process:
+        print('Processing ', t[0], ' trial ', str(i), 'of', len(trials_to_process))
+        cur.execute(cand_sql, [criteria_type_id, t[0]])
+        cands = cur.fetchall()
+        for bc in cands:
+            cur.execute(get_codes_sql, [bc[0], bc[4]])
+            t_codes = cur.fetchall()
+            print(t_codes)
+            norm_form = 'NO MATCH'
+            exp = None
+            if len(t_codes) > 0:
+                c_str = ["check_if_any('" + c[0] + "') == 'YES'" for c in t_codes]
+                norm_form = str([c[0] + " - " + c[2] for c in t_codes])
+                exp = " || ".join(c_str)
+            cur.execute("""update candidate_criteria set candidate_criteria_norm_form = ?, candidate_criteria_expression = ? , 
+                                          generated_date = ?, marked_done_date = NULL 
+
+                                             where nct_id = ? and criteria_type_id = ? and display_order = ?
+                                          """,
+                        [norm_form, exp, datetime.datetime.now(), bc[0], criteria_type_id, bc[4]])
+
+            con.commit()
+        i = i + 1
 
 
 def normalize_numeric_val(crit_num_val, exp, units_val, lower_nonsense, upper_nonsense):
@@ -125,16 +167,18 @@ args = parser.parse_args()
 con = sqlite3.connect(args.dbfilename)
 cur = con.cursor()
 
+crit_map  = get_criteria_type_map()
+print(crit_map)
+
 trials_to_process_sql = """
 select distinct cc.nct_id
 from candidate_criteria cc join trial_nlp_dates nlp on cc.nct_id = nlp.nct_id
-where (cc.generated_date is  NULL or cc.generated_date < nlp.classification_date) and cc.criteria_type_id in (6,7)
-"""
+where (cc.generated_date is  NULL or cc.generated_date < nlp.classification_date) and cc.criteria_type_id in (""" +str(crit_map['plt'])+','+str(crit_map['wbc'])+')'
 
 cur.execute(trials_to_process_sql)
 trials = cur.fetchall()
 
-print("There are ", len(trials), " with criteria to process")
+print("There are ", len(trials), " with criteria to process (blood results) ")
 
 platelets = re.compile(r"""(platelet[ ]count[ ]of|platelet[ ]count[ ]is|platelet[ ]count:|platelets:|platelets|platelet[ ]count|platelets\s*\(plt\))      # first group -  description of test used
                    \s*                             # White space 
@@ -412,8 +456,8 @@ candidate_criteria where criteria_type_id = ?  and nct_id = ?
 i = 1
 for t in trials:
     print('Processing ', t[0], ' trial ', str(i), 'of', len(trials))
-    for crit_info in [{'criteria_type_id': 6, 're_name': platelets, 'lower_nonsense': 10000, 'upper_nonsense': 250000, 'ncit_code': 'C51951'},
-                       {'criteria_type_id': 7, 're_name': wbc, 'lower_nonsense': 500, 'upper_nonsense': 500000, 'ncit_code': 'C51948' }]:
+    for crit_info in [{'criteria_type_id': crit_map['plt'], 're_name': platelets, 'lower_nonsense': 10000, 'upper_nonsense': 250000, 'ncit_code': 'C51951'},
+                       {'criteria_type_id': crit_map['wbc'], 're_name': wbc, 'lower_nonsense': 500, 'upper_nonsense': 500000, 'ncit_code': 'C51948' }]:
         # for now, need to make this dynamic for later.
         cur.execute(
             "update candidate_criteria set candidate_criteria_norm_form = NULL, candidate_criteria_expression = NULL where criteria_type_id = ? and nct_id = ?",
@@ -442,18 +486,18 @@ for t in trials:
 hiv_trials_to_process_sql = """
 select  cc.nct_id, cc.display_order
 from candidate_criteria cc join trial_nlp_dates nlp on cc.nct_id = nlp.nct_id
-where (cc.generated_date is  NULL or cc.generated_date < nlp.classification_date) and cc.criteria_type_id in (5)"""
-cur.execute(hiv_trials_to_process_sql)
+where (cc.generated_date is  NULL or cc.generated_date < nlp.classification_date) and cc.criteria_type_id in (?)"""
+cur.execute(hiv_trials_to_process_sql, [crit_map['hiv_exc']])
 hiv_exc_trials = cur.fetchall()
 print("Processing HIV expressions")
 get_hiv_codes_sql = """
 select  distinct ncit_code from candidate_criteria cc join ncit_nlp_concepts nlp on cc.nct_id = nlp.nct_id and cc.display_order = nlp.display_order
-where cc.nct_id = ? and cc.display_order = ? and cc.criteria_type_id = 5
+where cc.nct_id = ? and cc.display_order = ? and cc.criteria_type_id = ?
 """
 i = 1
 for t in hiv_exc_trials:
     print('Processing ', t[0], ' trial ', str(i), 'of', len(hiv_exc_trials))
-    cur.execute(get_hiv_codes_sql, [t[0], t[1]])
+    cur.execute(get_hiv_codes_sql, [t[0], t[1], crit_map['hiv_exc']])
     codes = cur.fetchall()
     hiv_codes = [c[0] for c in codes]
     #print("codes", hiv_codes)
@@ -472,7 +516,7 @@ for t in hiv_exc_trials:
                    generated_date = ?, marked_done_date = NULL 
 
                       where nct_id = ? and criteria_type_id = ? and display_order = ?
-                   """, [hiv_norm_form, hiv_exp, datetime.datetime.now(), t[0], 5, t[1]])
+                   """, [hiv_norm_form, hiv_exp, datetime.datetime.now(), t[0], crit_map['hiv_exc'], t[1]])
     i = i + 1
     con.commit()
 
@@ -483,19 +527,19 @@ print("Processing brain mets")
 brain_mets_trials_to_process_sql = """
 select  cc.nct_id, cc.display_order
 from candidate_criteria cc join trial_nlp_dates nlp on cc.nct_id = nlp.nct_id
-where (cc.generated_date is  NULL or cc.generated_date < nlp.classification_date) and cc.criteria_type_id in (35)"""
-cur.execute(brain_mets_trials_to_process_sql)
+where (cc.generated_date is  NULL or cc.generated_date < nlp.classification_date) and cc.criteria_type_id in (?)"""
+cur.execute(brain_mets_trials_to_process_sql, [crit_map['bmets']])
 brain_mets_trials_to_process = cur.fetchall()
 
 get_brain_mets_codes_sql = """
 select  distinct ncit_code from candidate_criteria cc join ncit_nlp_concepts nlp on cc.nct_id = nlp.nct_id and cc.display_order = nlp.display_order
-where cc.nct_id = ? and cc.display_order = ? and cc.criteria_type_id = 35
+where cc.nct_id = ? and cc.display_order = ? and cc.criteria_type_id = ?
 """
 
 i = 1
 for t in brain_mets_trials_to_process:
     print('Processing ', t[0], ' trial ', str(i), 'of', len(brain_mets_trials_to_process))
-    cur.execute(get_brain_mets_codes_sql, [t[0], t[1]])
+    cur.execute(get_brain_mets_codes_sql, [t[0], t[1], crit_map['bmets']])
     codes = cur.fetchall()
     brain_mets_codes = [c[0] for c in codes]
     if 'C3813' in brain_mets_codes and ( 'C48932' in brain_mets_codes or 'C80137' in brain_mets_codes) :
@@ -509,7 +553,7 @@ for t in brain_mets_trials_to_process:
                    generated_date = ?, marked_done_date = NULL 
 
                       where nct_id = ? and criteria_type_id = ? and display_order = ?
-                   """, [brain_mets_norm_form, brain_mets_exp, datetime.datetime.now(), t[0], 35, t[1]])
+                   """, [brain_mets_norm_form, brain_mets_exp, datetime.datetime.now(), t[0], crit_map['bmets'], t[1]])
     i = i + 1
     con.commit()
 #
@@ -546,19 +590,19 @@ def normalize_ecog_perf_status(tstat):
 perf_trials_to_process_sql = """
 select  distinct cc.nct_id
 from candidate_criteria cc join trial_nlp_dates nlp on cc.nct_id = nlp.nct_id
-where (cc.generated_date is  NULL or cc.generated_date < nlp.classification_date) and cc.criteria_type_id in (8)
+where (cc.generated_date is  NULL or cc.generated_date < nlp.classification_date) and cc.criteria_type_id in (?)
 
 """
-cur.execute(perf_trials_to_process_sql)
+cur.execute(perf_trials_to_process_sql, [crit_map['perf']])
 perf_trials_to_process = cur.fetchall()
 print("Processing Performance Status expressions")
 get_perf_codes_sql = """
 select  distinct ncit_code from candidate_criteria cc join ncit_nlp_concepts nlp on cc.nct_id = nlp.nct_id and cc.display_order = nlp.display_order
-where cc.nct_id = ? and cc.display_order = ? and cc.criteria_type_id = 8
+where cc.nct_id = ? and cc.display_order = ? and cc.criteria_type_id = ?
 """
 perf_cand_sql = """
 select nct_id, criteria_type_id, inclusion_indicator, candidate_criteria_text, display_order from
-candidate_criteria where criteria_type_id = 8  and nct_id = ?
+candidate_criteria where criteria_type_id = ?  and nct_id = ?
 """
 ecog_codes_sql = """
 select descendant from ncit_tc where parent in  ('C105721', 'C25400') 
@@ -576,7 +620,7 @@ for t in perf_trials_to_process:
     #perf_codes = [c[0] for c in codes]
     #perf_codes_set = set(perf_codes)
 
-    cur.execute(perf_cand_sql, [t[0]])
+    cur.execute(perf_cand_sql, [crit_map['perf'], t[0]])
     perf_cands = cur.fetchall()
 
     for pc in perf_cands:
@@ -644,7 +688,7 @@ for t in perf_trials_to_process:
                                      generated_date = ?, marked_done_date = NULL 
 
                                         where nct_id = ? and criteria_type_id = ? and display_order = ?
-                                     """, [perf_norm_form, perf_exp, datetime.datetime.now(), t[0], 8, pc[4]])
+                                     """, [perf_norm_form, perf_exp, datetime.datetime.now(), t[0], crit_map['perf'], pc[4]])
 
     i = i + 1
     con.commit()
@@ -656,84 +700,47 @@ biomarker_codes_sql = """
 with d_codes as 
 (
 select descendant as ncit_code from ncit_tc
-where parent in ('C3910','C16612', 'C26548') and 
-descendant not in ('C17021', 'C113245','C117187','C16676','C16307','C16612','C17275','C2273',
-'C2280','C25184','C16554','C20424','C28597','C16295','C18106','C20493', 'C25202','C25293')
+where parent in ('C3910','C16612', 'C26548') 
+except 
+select descendant as ncit_code from ncit_tc where parent in ( 'C17021', 'C21176') 
 )
-select sv.ncit_code, sv.display_order, sv.pref_name   
-from strict_nlp_data_view sv join d_codes d on 
-sv.ncit_code = d.ncit_code where nct_id = ? and display_order = ?
+select distinct sv.ncit_code, sv.display_order, sv.pref_name   
+from nlp_data_tab sv join d_codes d on 
+sv.ncit_code = d.ncit_code where nct_id = ? and display_order = ? and  length(sv.span_text) > 3
 """
-
-biomarker_trials_to_process_sql = """
-select  distinct cc.nct_id
-from candidate_criteria cc join trial_nlp_dates nlp on cc.nct_id = nlp.nct_id
-where (cc.generated_date is  NULL or cc.generated_date < nlp.classification_date) and cc.criteria_type_id in (1)
-
-"""
-biomarker_cand_sql = """
-select nct_id, criteria_type_id, inclusion_indicator, candidate_criteria_text, display_order from
-candidate_criteria where criteria_type_id = 1  and nct_id = ?
-"""
-cur.execute(biomarker_trials_to_process_sql)
-biomarker_trials_to_process = cur.fetchall()
-print("Processing Biomarker expressions")
-i = 1
-for t in biomarker_trials_to_process:
-    print('Processing ', t[0], ' trial ', str(i), 'of', len(biomarker_trials_to_process))
-    cur.execute(biomarker_cand_sql, [t[0]])
-    biomarker_cands = cur.fetchall()
-    for bc in biomarker_cands:
-        cur.execute(biomarker_codes_sql, [bc[0], bc[4]])
-        t_codes = cur.fetchall()
-        print(t_codes)
-        biomarker_norm_form = 'NO MATCH'
-        biomarker_exp = None
-        if len(t_codes) > 0:
-            c_str = ["check_if_any('" + c[0] + "') == 'YES'" for c in t_codes]
-            biomarker_norm_form = str([c[0]+" - " + c[2] for c in t_codes])
-            biomarker_exp = " || ".join(c_str)
-        cur.execute("""update candidate_criteria set candidate_criteria_norm_form = ?, candidate_criteria_expression = ? , 
-                                      generated_date = ?, marked_done_date = NULL 
-    
-                                         where nct_id = ? and criteria_type_id = ? and display_order = ?
-                                      """, [biomarker_norm_form, biomarker_exp, datetime.datetime.now(), bc[0], 1, bc[4]])
-
-        con.commit()
-    i = i + 1
+generate_ont_expression(con, crit_map['biomarker_inc'], biomarker_codes_sql)
+generate_ont_expression(con, crit_map['biomarker_exc'], biomarker_codes_sql)
 
 
-disease_trials_to_process_sql = """
-select  distinct cc.nct_id
-from candidate_criteria cc join trial_nlp_dates nlp on cc.nct_id = nlp.nct_id
-where (cc.generated_date is  NULL or cc.generated_date < nlp.classification_date) and cc.criteria_type_id in (38)
-"""
-cur.execute(disease_trials_to_process_sql)
-disease_trials_to_process = cur.fetchall()
-disease_cand_sql = """
-select nct_id, criteria_type_id, inclusion_indicator, candidate_criteria_text, display_order from
-candidate_criteria where criteria_type_id = 38  and nct_id = ?
-"""
 
 disease_codes_sql = """
 with d_codes as 
 (
 select descendant as ncit_code from ncit_tc
-where parent in ('C2916') 
+where parent in ('C3262') 
 )
-select sv.ncit_code, sv.display_order, sv.pref_name   
-from strict_nlp_data_view sv join d_codes d on 
-sv.ncit_code = d.ncit_code where nct_id = ? and display_order = ?
+select distinct sv.ncit_code, sv.display_order, sv.pref_name   
+from nlp_data_tab sv join d_codes d on 
+sv.ncit_code = d.ncit_code where  length(span_text) > 4 and nct_id = ? and display_order = ?
+and 
+((sv.pref_name like '%hildhood%' and span_text  like '%hildhood%') or (sv.pref_name not like '%hildhood%'))
 """
-i = 1
-for t in disease_trials_to_process:
-    print('Processing ', t[0], ' trial ', str(i), 'of', len(disease_trials_to_process))
-    cur.execute(disease_cand_sql, [t[0]])
-    disease_cands = cur.fetchall()
-    for dc in disease_cands:
-        cur.execute(disease_codes_sql, [dc[0], dc[4]])
-        t_codes = cur.fetchall()
-        print(t_codes)
-    i = i + 1
+generate_ont_expression(con, crit_map['disease_inc'], disease_codes_sql)
+
+
+prior_therapy_codes_sql = """
+with d_codes as 
+(
+select descendant as ncit_code from ncit_tc
+where parent in ('C25218', 'C1908', 'C62634', 'C163758')  
+except 
+select descendant as ncit_code from ncit_tc where parent in ( 'C25294') 
+)
+select distinct sv.ncit_code, sv.display_order, sv.pref_name   
+from nlp_data_tab sv join d_codes d on 
+sv.ncit_code = d.ncit_code where nct_id = ? and display_order = ? and  length(sv.span_text) > 3
+"""
+generate_ont_expression(con, crit_map['pt_inc'], prior_therapy_codes_sql)
+generate_ont_expression(con, crit_map['pt_exc'], prior_therapy_codes_sql)
 
 con.close()

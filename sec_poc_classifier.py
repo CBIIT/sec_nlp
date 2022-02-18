@@ -3,7 +3,7 @@ from spacy.matcher import PhraseMatcher
 import sqlite3
 import datetime
 import argparse
-
+from common_funcs import get_criteria_type_map
 
 def check_for_concepts(con, nct_id, criteria_type_id, ncit_codes, inclusion_indicator, ncit_codes_to_remove = '', include_descendants = True):
 
@@ -94,13 +94,14 @@ parser = argparse.ArgumentParser(description='Create candidate criteria texts')
 
 parser.add_argument('--dbfilename', action='store', type=str, required=True)
 args = parser.parse_args()
-
+crit_map  = get_criteria_type_map()
+print(crit_map)
 con = sqlite3.connect(args.dbfilename)
 
 get_trials_sql = """
 select t.nct_id , t.record_verification_date, t.amendment_date,td.tokenized_date, td.classification_date from trials t 
 left outer join trial_nlp_dates td on t.nct_id = td.nct_id 
-where td.classification_date is null or td.classification_date <= td.tokenized_date
+where td.classification_date is null or td.classification_date <= td.tokenized_date 
 """
 
 cur = con.cursor()
@@ -128,22 +129,23 @@ for trial in trials_to_classify:
 
     cur.execute("delete from candidate_criteria where nct_id = ? ", [nct_id])
 
-    check_for_concepts(con, nct_id, 8, ['C20641'],1, ncit_codes_to_remove=['C116664', 'C161964'])   # Performance status
-    check_for_concepts(con, nct_id, 7, ['C51948'],1, include_descendants=False) # WBC
-    check_for_concepts(con, nct_id, 6, ['C51951'],1)    # PLT
-    check_for_concepts(con, nct_id, 5, ['C14219'],0)    # HIV
-    check_for_concepts(con, nct_id, 35, ['C4015'],0)    # BMETS
+    check_for_concepts(con, nct_id, crit_map['perf'], ['C20641'],1, ncit_codes_to_remove=['C116664', 'C161964'])   # Performance status
+    check_for_concepts(con, nct_id, crit_map['wbc'], ['C51948'],1, include_descendants=False) # WBC
+    check_for_concepts(con, nct_id, crit_map['plt'], ['C51951'],1)    # PLT
+    check_for_concepts(con, nct_id, crit_map['hiv_exc'], ['C14219'],0)    # HIV
+    check_for_concepts(con, nct_id, crit_map['bmets'], ['C4015'],0)    # BMETS
     #check_for_concepts(con, nct_id, 1, ['C3910','C16612'],0, ncit_codes_to_remove= ['C90505'] )    # BIOMARKER EXC
-    check_for_concepts(con, nct_id, 1, ['C3910','C16612', 'C26548'],0, ncit_codes_to_remove= ['C90505'])    # BIOMARKER EXC
-    check_for_concepts(con, nct_id, 2, ['C3910','C16612', 'C26548'],1, ncit_codes_to_remove= ['C90505'] )    # BIOMARKER INC
+    check_for_concepts(con, nct_id, crit_map['biomarker_exc'], ['C3910','C16612', 'C26548'],0, ncit_codes_to_remove= [ 'C74944','C17021', 'C21176','C25294'])    # BIOMARKER EXC
+    check_for_concepts(con, nct_id, crit_map['biomarker_inc'], ['C3910','C16612', 'C26548'],1, ncit_codes_to_remove= ['C74944 ','C17021', 'C21176','C25294'] )    # BIOMARKER INC
 
 
     # PT -- need to split these out for inc/exclusion
    # check_for_concepts(con, nct_id , 36, ['C62634','C15313', 'C15329'],1)  # PT INC
    # check_for_concepts(con, nct_id , 37, ['C62634','C15313', 'C15329'],0)  # PT EXC
-    check_for_concepts(con, nct_id, 36, ['C25218', 'C1908', 'C62634', 'C163758'], 1,ncit_codes_to_remove= ['C25294'])  # PT INC, remove lab procedures
-    check_for_concepts(con, nct_id, 37, ['C25218', 'C1908', 'C62634', 'C163758'],0, ncit_codes_to_remove= ['C25294'])  # PT EXC, remove lab procedures
+    check_for_concepts(con, nct_id, crit_map['pt_inc'], ['C25218', 'C1908', 'C62634', 'C163758'], 1,ncit_codes_to_remove= ['C25294'])  # PT INC, remove lab procedures
+    check_for_concepts(con, nct_id, crit_map['pt_exc'], ['C25218', 'C1908', 'C62634', 'C163758'],0, ncit_codes_to_remove= ['C25294'])  # PT EXC, remove lab procedures
 
+    check_for_concepts(con, nct_id, crit_map['disease_inc'], ['C3262'],1)  #  Disease inclusions
 
     cur.execute('select count(*) from trial_nlp_dates where nct_id = ?', [nct_id] )
     hm = cur.fetchone()[0]

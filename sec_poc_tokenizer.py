@@ -185,6 +185,17 @@ for t in trial_list_for_processing:
     i += 1
  #   bar.update(i)
 
+# Now refresh the nlp_data_tab and reindex
+
+cur.execute('drop table if exists nlp_data_tab');
+con.commit()
+cur.execute("""create table nlp_data_tab as select nct_id, ncit_code, display_order, pref_name, span_text, start_index, end_index, inclusion_indicator, description
+from nlp_data_view""")
+con.commit()
+cur.execute('create index nlp_dt_ncit_code on nlp_data_tab(ncit_code)')
+con.commit()
+cur.execute('create index nlp_dt_nct_id on nlp_data_tab(nct_id)')
+con.commit()
 
 con.close()
 
