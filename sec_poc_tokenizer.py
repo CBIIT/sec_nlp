@@ -4,7 +4,8 @@ import sqlite3
 import datetime
 import argparse
 from functools import lru_cache
-
+import psycopg2
+import psycopg2.extras
 
 import sys
 
@@ -14,10 +15,17 @@ matcher = PhraseMatcher(nlp.vocab, attr='LOWER')
 
 parser = argparse.ArgumentParser(description='Parse NCI codes from the text')
 
-parser.add_argument('--dbfilename', action='store', type=str, required=True)
-args = parser.parse_args()
-con = sqlite3.connect(args.dbfilename)
+parser.add_argument('--dbname', action='store', type=str, required=False)
+parser.add_argument('--host', action='store', type=str, required=False)
+parser.add_argument('--user', action='store', type=str, required=False)
+parser.add_argument('--password', action='store', type=str, required=False)
+parser.add_argument('--port', action='store', type=str, required=False)
 
+args = parser.parse_args()
+con = psycopg2.connect(database=args.dbname, user=args.user, host=args.host, port=args.port,
+ password=args.password)
+
+cur = con.cursor()
 start_nlp_init = datetime.datetime.now()
 print("Initializing NLP at ", start_nlp_init)
 rs = []
@@ -140,7 +148,7 @@ for t in trial_list_for_processing:
     con.commit()
     crits = cur.fetchall()
 
-    cur.execute("delete from ncit_nlp_concepts where nct_id = ? ", [t[0]])
+    cur.execute("delete from ncit_nlp_concepts where nct_id = %s ", [t[0]])
     for crit in crits:
         doc = nlp(crit[2])
         matches = matcher(doc)
@@ -175,12 +183,12 @@ for t in trial_list_for_processing:
                     for one_code in rcodes:
                         cur.execute(ins_code_sql, [crit[0], crit[1], one_code[0], f.lower_, f.start_char, f.end_char])
         #con.commit()
-    cur.execute('select count(*) from trial_nlp_dates where nct_id = ?', [t[0]] )
+    cur.execute('select count(*) from trial_nlp_dates where nct_id = %s', [t[0]] )
     hm = cur.fetchone()[0]
     if hm == 1:
-        cur.execute("update trial_nlp_dates set tokenized_date = ?  where nct_id = ?" ,[datetime.datetime.now() , t[0]])
+        cur.execute("update trial_nlp_dates set tokenized_date = %s  where nct_id = %s" ,[datetime.datetime.now() , t[0]])
     else:
-        cur.execute("insert into trial_nlp_dates(nct_id, tokenized_date) values(?,?)", [t[0], datetime.datetime.now()])
+        cur.execute("insert into trial_nlp_dates(nct_id, tokenized_date) values(%s,%s)", [t[0], datetime.datetime.now()])
     con.commit()
     i += 1
  #   bar.update(i)
