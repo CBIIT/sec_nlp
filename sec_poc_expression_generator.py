@@ -693,7 +693,6 @@ for t in perf_trials_to_process:
     i = i + 1
     con.commit()
 
-
 # Biomarkers
 
 biomarker_codes_sql = """
