@@ -93,24 +93,24 @@ get_trials_sql = """
 select  t.nct_id, t.record_verification_date, t.amendment_date, td.tokenized_date
 from trials t left outer join trial_nlp_dates td on t.nct_id = td.nct_id 
 where (td.tokenized_date is null)
-      or td.tokenized_date <= max(coalesce( t.record_verification_date,'1980-01-01'), 
+      or td.tokenized_date <= greatest(coalesce( t.record_verification_date,'1980-01-01'), 
                                                             coalesce( t.amendment_date,'1980-01-01'))
 """
 
 get_crit_sql = """
-    select nct_id, display_order, description  from trial_unstructured_criteria where nct_id = ? 
+    select nct_id, display_order, description  from trial_unstructured_criteria where nct_id = %s 
 order by nct_id, display_order 
 /* limit 10000 */  
 """
 ins_code_sql = """
-    insert into ncit_nlp_concepts(nct_id, display_order, ncit_code, span_text, start_index, end_index) values (?,?,?,?,?,?)
+    insert into ncit_nlp_concepts(nct_id, display_order, ncit_code, span_text, start_index, end_index) values (%s,%s,%s,%s,%s,%s)
 """
 
 @lru_cache(maxsize=10000)
 def get_best_ncit_code_for_span(con, a_span):
 
     get_best_ncit_code_sql_for_span = """
-    select code from ncit where lower(pref_name) = ? and 
+    select code from ncit where lower(pref_name) = %s and 
     lower(pref_name) not in ('i', 'ii', 'iii', 'iv', 'v', 'set', 'all', 'at', 'is', 'and', 'or', 'to', 'a', 'be', 'for', 'an', 'as', 'in', 'of', 'x', 'are', 'no', 'any', 'on', 'who', 'have', 't', 'who', 'at') 
     """
     cur = con.cursor()
@@ -122,7 +122,7 @@ def get_best_ncit_code_for_span(con, a_span):
 def get_all_ncit_codes_for_span(con, a_span):
 
     get_ncit_code_sql_for_span = """
-    select distinct code from ncit_syns where l_syn_name = ? and
+    select distinct code from ncit_syns where l_syn_name = %s and
      l_syn_name not in ('i', 'ii', 'iii', 'iv', 'v', 'set', 'all' , 'at', 'is', 'and', 'or', 'to', 'a', 'be', 'for', 'an', 'as', 'in', 'of', 'x', 'are', 'no', 'any', 'on', 'who', 'have', 't', 'who', 'at') 
     """
     cur = con.cursor()
