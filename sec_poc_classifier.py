@@ -4,6 +4,8 @@ import sqlite3
 import datetime
 import argparse
 from common_funcs import get_criteria_type_map
+import psycopg2
+import psycopg2.extras
 
 def check_for_concepts(con, nct_id, criteria_type_id, ncit_codes, inclusion_indicator, ncit_codes_to_remove = '', include_descendants = True):
 
@@ -20,22 +22,22 @@ def check_for_concepts(con, nct_id, criteria_type_id, ncit_codes, inclusion_indi
        
           select
         nlp.nct_id, nlp.display_order, nlp.ncit_code, nlp.start_index, nlp.end_index ,u.inclusion_indicator,  u.description
-    from ncit_nlp_concepts nlp join descendants d on nlp.ncit_code = d.descendant and nlp.nct_id = ?
-    join trial_unstructured_criteria u on nlp.nct_id = u.nct_id  and nlp.display_order = u.display_order and u.inclusion_indicator = ?
+    from ncit_nlp_concepts nlp join descendants d on nlp.ncit_code = d.descendant and nlp.nct_id = %s
+    join trial_unstructured_criteria u on nlp.nct_id = u.nct_id  and nlp.display_order = u.display_order and u.inclusion_indicator = %s
         and nlp.ncit_code not in (select descendant as ncit_code from descendants_to_remove) 
-        """.format(desc_1=', '.join(['?'] * len(ncit_codes)),
-                   desc_to_remove=', '.join(['?'] * len(ncit_codes_to_remove)))
+        """.format(desc_1="''" if len(ncit_codes) == 0 else ', '.join(['%s'] * len(ncit_codes)),
+                   desc_to_remove="''" if len(ncit_codes_to_remove) == 0 else ', '.join(['%s'] * len(ncit_codes_to_remove)))
     else:
         desc_sql = """
         select
                nlp.nct_id, nlp.display_order, nlp.ncit_code, nlp.start_index, nlp.end_index ,u.inclusion_indicator,  u.description
            from ncit_nlp_concepts nlp 
-           join trial_unstructured_criteria u on nlp.nct_id = u.nct_id  and nlp.display_order = u.display_order and u.inclusion_indicator = ?
+           join trial_unstructured_criteria u on nlp.nct_id = u.nct_id  and nlp.display_order = u.display_order and u.inclusion_indicator = %s
                and nlp.ncit_code in ( {good_codes} ) and nlp.ncit_code not in ({codes_to_remove}) 
-                and nlp.nct_id = ?
-                """.format(good_codes=', '.join(['?'] * len(ncit_codes)),
-                          codes_to_remove=', '.join(['?'] * len(ncit_codes_to_remove)))
-
+                and nlp.nct_id = %s
+                """.format(good_codes=', '.join(['%s'] * len(ncit_codes)),
+                          codes_to_remove="''" if len(ncit_codes_to_remove) == 0 else ', '.join(['%s'] * len(ncit_codes_to_remove)))
+    #print(desc_sql)
     cur = con.cursor()
     if len(ncit_codes_to_remove) == 0:
         if include_descendants:
@@ -51,7 +53,7 @@ def check_for_concepts(con, nct_id, criteria_type_id, ncit_codes, inclusion_indi
    # print(d)
 
     num_crits_for_trial_sql = """
-    select count(*) as num_crits from trial_unstructured_criteria where nct_id = ? and inclusion_indicator = ?
+    select count(*) as num_crits from trial_unstructured_criteria where nct_id = %s and inclusion_indicator = %s
     """
     cur = con.cursor()
     cur.execute(num_crits_for_trial_sql, [nct_id,inclusion_indicator])
@@ -66,7 +68,7 @@ def check_for_concepts(con, nct_id, criteria_type_id, ncit_codes, inclusion_indi
         for c in t:
            # print(crit)
             ins_sql = """
-            insert into candidate_criteria(nct_id, criteria_type_id,  candidate_criteria_text, display_order,inclusion_indicator) values (?,?,?,?,?)
+            insert into candidate_criteria(nct_id, criteria_type_id,  candidate_criteria_text, display_order,inclusion_indicator) values (%s,%s,%s,%s,%s)
             """
             cur.execute(ins_sql, [nct_id, criteria_type_id, '('+ str(ncit_codes) + ')--- '+c[0],c[1] , c[2]])
         con.commit()
@@ -92,11 +94,18 @@ def get_descendants(con, ncit_code):
 
 parser = argparse.ArgumentParser(description='Create candidate criteria texts')
 
-parser.add_argument('--dbfilename', action='store', type=str, required=True)
+parser.add_argument('--dbname', action='store', type=str, required=False)
+parser.add_argument('--host', action='store', type=str, required=False)
+parser.add_argument('--user', action='store', type=str, required=False)
+parser.add_argument('--password', action='store', type=str, required=False)
+parser.add_argument('--port', action='store', type=str, required=False)
+
+
 args = parser.parse_args()
 crit_map  = get_criteria_type_map()
 print(crit_map)
-con = sqlite3.connect(args.dbfilename)
+con = psycopg2.connect(database=args.dbname, user=args.user, host=args.host, port=args.port,
+ password=args.password)
 
 get_trials_sql = """
 select t.nct_id , t.record_verification_date, t.amendment_date,td.tokenized_date, td.classification_date from trials t 
@@ -127,32 +136,32 @@ for trial in trials_to_classify:
     nct_id = trial[0]
     print(f"{i: <8}{trial[0]: <15}{trial[1] or '': ^30}{trial[2] or '': ^30}{trial[3] or '': ^30}{trial[4] or '': ^30}")
 
-    cur.execute("delete from candidate_criteria where nct_id = ? ", [nct_id])
+    cur.execute("delete from candidate_criteria where nct_id = %s ", [nct_id])
 
-    check_for_concepts(con, nct_id, crit_map['perf'], ['C20641'],1, ncit_codes_to_remove=['C116664', 'C161964'])   # Performance status
-    check_for_concepts(con, nct_id, crit_map['wbc'], ['C51948'],1, include_descendants=False) # WBC
-    check_for_concepts(con, nct_id, crit_map['plt'], ['C51951'],1)    # PLT
-    check_for_concepts(con, nct_id, crit_map['hiv_exc'], ['C14219'],0)    # HIV
-    check_for_concepts(con, nct_id, crit_map['bmets'], ['C4015'],0)    # BMETS
+    check_for_concepts(con, nct_id, crit_map['perf'], ['C20641'],True, ncit_codes_to_remove=['C116664', 'C161964'])   # Performance status
+    check_for_concepts(con, nct_id, crit_map['wbc'], ['C51948'],True, include_descendants=False) # WBC
+    check_for_concepts(con, nct_id, crit_map['plt'], ['C51951'],True)    # PLT
+    check_for_concepts(con, nct_id, crit_map['hiv_exc'], ['C14219'],False)    # HIV
+    check_for_concepts(con, nct_id, crit_map['bmets'], ['C4015'],False)    # BMETS
     #check_for_concepts(con, nct_id, 1, ['C3910','C16612'],0, ncit_codes_to_remove= ['C90505'] )    # BIOMARKER EXC
-    check_for_concepts(con, nct_id, crit_map['biomarker_exc'], ['C3910','C16612', 'C26548'],0, ncit_codes_to_remove= [ 'C74944','C17021', 'C21176','C25294'])    # BIOMARKER EXC
-    check_for_concepts(con, nct_id, crit_map['biomarker_inc'], ['C3910','C16612', 'C26548'],1, ncit_codes_to_remove= ['C74944 ','C17021', 'C21176','C25294'] )    # BIOMARKER INC
+    check_for_concepts(con, nct_id, crit_map['biomarker_exc'], ['C3910','C16612', 'C26548'],False, ncit_codes_to_remove= [ 'C74944','C17021', 'C21176','C25294'])    # BIOMARKER EXC
+    check_for_concepts(con, nct_id, crit_map['biomarker_inc'], ['C3910','C16612', 'C26548'],True, ncit_codes_to_remove= ['C74944 ','C17021', 'C21176','C25294'] )    # BIOMARKER INC
 
 
     # PT -- need to split these out for inc/exclusion
    # check_for_concepts(con, nct_id , 36, ['C62634','C15313', 'C15329'],1)  # PT INC
    # check_for_concepts(con, nct_id , 37, ['C62634','C15313', 'C15329'],0)  # PT EXC
-    check_for_concepts(con, nct_id, crit_map['pt_inc'], ['C25218', 'C1908', 'C62634', 'C163758'], 1,ncit_codes_to_remove= ['C25294'])  # PT INC, remove lab procedures
-    check_for_concepts(con, nct_id, crit_map['pt_exc'], ['C25218', 'C1908', 'C62634', 'C163758'],0, ncit_codes_to_remove= ['C25294'])  # PT EXC, remove lab procedures
+    check_for_concepts(con, nct_id, crit_map['pt_inc'], ['C25218', 'C1908', 'C62634', 'C163758'], True,ncit_codes_to_remove= ['C25294'])  # PT INC, remove lab procedures
+    check_for_concepts(con, nct_id, crit_map['pt_exc'], ['C25218', 'C1908', 'C62634', 'C163758'],False, ncit_codes_to_remove= ['C25294'])  # PT EXC, remove lab procedures
 
-    check_for_concepts(con, nct_id, crit_map['disease_inc'], ['C3262'],1)  #  Disease inclusions
+    check_for_concepts(con, nct_id, crit_map['disease_inc'], ['C3262'],True)  #  Disease inclusions
 
-    cur.execute('select count(*) from trial_nlp_dates where nct_id = ?', [nct_id] )
+    cur.execute('select count(*) from trial_nlp_dates where nct_id = %s', [nct_id] )
     hm = cur.fetchone()[0]
     if hm == 1:
-        cur.execute("update trial_nlp_dates set classification_date = ?  where nct_id = ?" ,[datetime.datetime.now() , nct_id])
+        cur.execute("update trial_nlp_dates set classification_date = %s  where nct_id = %s" ,[datetime.datetime.now() , nct_id])
     else:
-        cur.execute("insert into trial_nlp_dates(nct_id, classification_date) values(?,?)", [nct_id, datetime.datetime.now()])
+        cur.execute("insert into trial_nlp_dates(nct_id, classification_date) values(%s,%s)", [nct_id, datetime.datetime.now()])
     con.commit()
     i = i + 1
 

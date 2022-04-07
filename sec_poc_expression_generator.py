@@ -5,7 +5,8 @@ import argparse
 import datetime
 from create_performance_expression import parse_performance_string
 from common_funcs import get_criteria_type_map
-
+import psycopg2
+import psycopg2.extras
 
 def generate_ont_expression(con, criteria_type_id, get_codes_sql):
 
@@ -13,12 +14,12 @@ def generate_ont_expression(con, criteria_type_id, get_codes_sql):
     get_trials_to_process_sql = """
     select  distinct cc.nct_id
     from candidate_criteria cc join trial_nlp_dates nlp on cc.nct_id = nlp.nct_id
-    where (cc.generated_date is  NULL or cc.generated_date < nlp.classification_date) and cc.criteria_type_id in (?)
+    where (cc.generated_date is  NULL or cc.generated_date < nlp.classification_date) and cc.criteria_type_id in (%s)
 
     """
     cand_sql = """
     select nct_id, criteria_type_id, inclusion_indicator, candidate_criteria_text, display_order from
-    candidate_criteria where criteria_type_id = ?  and nct_id = ?
+    candidate_criteria where criteria_type_id = %s  and nct_id = %s 
     """
     cur.execute(get_trials_to_process_sql, [criteria_type_id])
     trials_to_process = cur.fetchall()
@@ -28,8 +29,11 @@ def generate_ont_expression(con, criteria_type_id, get_codes_sql):
         print('Processing ', t[0], ' trial ', str(i), 'of', len(trials_to_process))
         cur.execute(cand_sql, [criteria_type_id, t[0]])
         cands = cur.fetchall()
+        #print('cands = ', cands)
         for bc in cands:
-            cur.execute(get_codes_sql, [bc[0], bc[4]])
+            #print("bc", bc[0], bc[4], len(bc))
+            r = cur.execute(get_codes_sql, [bc[0], bc[4]])
+            print(r)
             t_codes = cur.fetchall()
             print(t_codes)
             norm_form = 'NO MATCH'
@@ -38,10 +42,10 @@ def generate_ont_expression(con, criteria_type_id, get_codes_sql):
                 c_str = ["check_if_any('" + c[0] + "') == 'YES'" for c in t_codes]
                 norm_form = str([c[0] + " - " + c[2] for c in t_codes])
                 exp = " || ".join(c_str)
-            cur.execute("""update candidate_criteria set candidate_criteria_norm_form = ?, candidate_criteria_expression = ? , 
-                                          generated_date = ?, marked_done_date = NULL 
+            cur.execute("""update candidate_criteria set candidate_criteria_norm_form = %s, candidate_criteria_expression = %s , 
+                                          generated_date = %s, marked_done_date = NULL 
 
-                                             where nct_id = ? and criteria_type_id = ? and display_order = ?
+                                             where nct_id = %s and criteria_type_id = %s and display_order = %s 
                                           """,
                         [norm_form, exp, datetime.datetime.now(), bc[0], criteria_type_id, bc[4]])
 
@@ -141,19 +145,19 @@ def process_numeric_crit(rs, regex, con, cur, criteria_type_id, ncit_code, lower
 
             print("inc_exc", r[2], "new normal form ", new_normal_form, "new expression ", new_expression)
             cur.execute(
-                """update candidate_criteria set candidate_criteria_norm_form = ?, candidate_criteria_expression = ? , 
-                generated_date = ?, marked_done_date = NULL 
+                """update candidate_criteria set candidate_criteria_norm_form = %s, candidate_criteria_expression = %s , 
+                generated_date = %s, marked_done_date = NULL 
                  
-                   where nct_id = ? and criteria_type_id = ? and display_order = ?
+                   where nct_id = %s and criteria_type_id = %s and display_order = %s 
                 """, [new_normal_form, new_expression, datetime.datetime.now(), r[0], criteria_type_id, r[4]])
             #con.commit()
         else:
             print(t, "NO MATCH")
             cur.execute(
-                """update candidate_criteria set candidate_criteria_norm_form = ?, candidate_criteria_expression = ? , 
-                generated_date = ?, marked_done_date = NULL 
+                """update candidate_criteria set candidate_criteria_norm_form = %s, candidate_criteria_expression = %s , 
+                generated_date = %s, marked_done_date = NULL 
 
-                   where nct_id = ? and criteria_type_id = ? and display_order = ?
+                   where nct_id = %s and criteria_type_id = %s and display_order = %s
                 """, ['NO MATCH', 'NO MATCH', datetime.datetime.now(), r[0], criteria_type_id, r[4]])
 
     #print(exponents)
@@ -162,9 +166,17 @@ def process_numeric_crit(rs, regex, con, cur, criteria_type_id, ncit_code, lower
 
 parser = argparse.ArgumentParser(description='Generate candidate expressions')
 
-parser.add_argument('--dbfilename', action='store', type=str, required=True)
+parser.add_argument('--dbname', action='store', type=str, required=False)
+parser.add_argument('--host', action='store', type=str, required=False)
+parser.add_argument('--user', action='store', type=str, required=False)
+parser.add_argument('--password', action='store', type=str, required=False)
+parser.add_argument('--port', action='store', type=str, required=False)
+
 args = parser.parse_args()
-con = sqlite3.connect(args.dbfilename)
+
+
+con = psycopg2.connect(database=args.dbname, user=args.user, host=args.host, port=args.port,
+                       password=args.password)
 cur = con.cursor()
 
 crit_map  = get_criteria_type_map()
@@ -451,7 +463,7 @@ plain_perf_re = re.compile(r"""
 
 cand_sql = """
 select nct_id, criteria_type_id, inclusion_indicator, candidate_criteria_text, display_order from
-candidate_criteria where criteria_type_id = ?  and nct_id = ?
+candidate_criteria where criteria_type_id = %s  and nct_id = %s 
 """
 i = 1
 for t in trials:
@@ -460,7 +472,7 @@ for t in trials:
                        {'criteria_type_id': crit_map['wbc'], 're_name': wbc, 'lower_nonsense': 500, 'upper_nonsense': 500000, 'ncit_code': 'C51948' }]:
         # for now, need to make this dynamic for later.
         cur.execute(
-            "update candidate_criteria set candidate_criteria_norm_form = NULL, candidate_criteria_expression = NULL where criteria_type_id = ? and nct_id = ?",
+            "update candidate_criteria set candidate_criteria_norm_form = NULL, candidate_criteria_expression = NULL where criteria_type_id = %s and nct_id = %s",
             [crit_info['criteria_type_id'], t[0]])
 
         cur.execute(cand_sql, [crit_info['criteria_type_id'], t[0]])
@@ -486,13 +498,13 @@ for t in trials:
 hiv_trials_to_process_sql = """
 select  cc.nct_id, cc.display_order
 from candidate_criteria cc join trial_nlp_dates nlp on cc.nct_id = nlp.nct_id
-where (cc.generated_date is  NULL or cc.generated_date < nlp.classification_date) and cc.criteria_type_id in (?)"""
+where (cc.generated_date is  NULL or cc.generated_date < nlp.classification_date) and cc.criteria_type_id in (%s)"""
 cur.execute(hiv_trials_to_process_sql, [crit_map['hiv_exc']])
 hiv_exc_trials = cur.fetchall()
 print("Processing HIV expressions")
 get_hiv_codes_sql = """
 select  distinct ncit_code from candidate_criteria cc join ncit_nlp_concepts nlp on cc.nct_id = nlp.nct_id and cc.display_order = nlp.display_order
-where cc.nct_id = ? and cc.display_order = ? and cc.criteria_type_id = ?
+where cc.nct_id = %s and cc.display_order = %s and cc.criteria_type_id = %s 
 """
 i = 1
 for t in hiv_exc_trials:
@@ -512,10 +524,10 @@ for t in hiv_exc_trials:
         hiv_exp = "NO MATCH"
         hiv_norm_form = 'NO MATCH'
 
-    cur.execute("""update candidate_criteria set candidate_criteria_norm_form = ?, candidate_criteria_expression = ? , 
-                   generated_date = ?, marked_done_date = NULL 
+    cur.execute("""update candidate_criteria set candidate_criteria_norm_form = %s, candidate_criteria_expression = %s , 
+                   generated_date = %s, marked_done_date = NULL 
 
-                      where nct_id = ? and criteria_type_id = ? and display_order = ?
+                      where nct_id = %s and criteria_type_id = %s and display_order = %s 
                    """, [hiv_norm_form, hiv_exp, datetime.datetime.now(), t[0], crit_map['hiv_exc'], t[1]])
     i = i + 1
     con.commit()
@@ -527,13 +539,13 @@ print("Processing brain mets")
 brain_mets_trials_to_process_sql = """
 select  cc.nct_id, cc.display_order
 from candidate_criteria cc join trial_nlp_dates nlp on cc.nct_id = nlp.nct_id
-where (cc.generated_date is  NULL or cc.generated_date < nlp.classification_date) and cc.criteria_type_id in (?)"""
+where (cc.generated_date is  NULL or cc.generated_date < nlp.classification_date) and cc.criteria_type_id in (%s)"""
 cur.execute(brain_mets_trials_to_process_sql, [crit_map['bmets']])
 brain_mets_trials_to_process = cur.fetchall()
 
 get_brain_mets_codes_sql = """
 select  distinct ncit_code from candidate_criteria cc join ncit_nlp_concepts nlp on cc.nct_id = nlp.nct_id and cc.display_order = nlp.display_order
-where cc.nct_id = ? and cc.display_order = ? and cc.criteria_type_id = ?
+where cc.nct_id = %s and cc.display_order = %s and cc.criteria_type_id = %s 
 """
 
 i = 1
@@ -549,10 +561,10 @@ for t in brain_mets_trials_to_process:
         brain_mets_exp = "NO MATCH"
         brain_mets_norm_form = 'NO MATCH'
 
-    cur.execute("""update candidate_criteria set candidate_criteria_norm_form = ?, candidate_criteria_expression = ? , 
-                   generated_date = ?, marked_done_date = NULL 
+    cur.execute("""update candidate_criteria set candidate_criteria_norm_form = %s, candidate_criteria_expression = %s , 
+                   generated_date = %s, marked_done_date = NULL 
 
-                      where nct_id = ? and criteria_type_id = ? and display_order = ?
+                      where nct_id = %s and criteria_type_id = %s and display_order = %s 
                    """, [brain_mets_norm_form, brain_mets_exp, datetime.datetime.now(), t[0], crit_map['bmets'], t[1]])
     i = i + 1
     con.commit()
@@ -590,7 +602,7 @@ def normalize_ecog_perf_status(tstat):
 perf_trials_to_process_sql = """
 select  distinct cc.nct_id
 from candidate_criteria cc join trial_nlp_dates nlp on cc.nct_id = nlp.nct_id
-where (cc.generated_date is  NULL or cc.generated_date < nlp.classification_date) and cc.criteria_type_id in (?)
+where (cc.generated_date is  NULL or cc.generated_date < nlp.classification_date) and cc.criteria_type_id in (%s)
 
 """
 cur.execute(perf_trials_to_process_sql, [crit_map['perf']])
@@ -598,11 +610,11 @@ perf_trials_to_process = cur.fetchall()
 print("Processing Performance Status expressions")
 get_perf_codes_sql = """
 select  distinct ncit_code from candidate_criteria cc join ncit_nlp_concepts nlp on cc.nct_id = nlp.nct_id and cc.display_order = nlp.display_order
-where cc.nct_id = ? and cc.display_order = ? and cc.criteria_type_id = ?
+where cc.nct_id = %s and cc.display_order = %s and cc.criteria_type_id = %s 
 """
 perf_cand_sql = """
 select nct_id, criteria_type_id, inclusion_indicator, candidate_criteria_text, display_order from
-candidate_criteria where criteria_type_id = ?  and nct_id = ?
+candidate_criteria where criteria_type_id = %s  and nct_id = %s 
 """
 ecog_codes_sql = """
 select descendant from ncit_tc where parent in  ('C105721', 'C25400') 
@@ -684,10 +696,10 @@ for t in perf_trials_to_process:
 
 
 
-        cur.execute("""update candidate_criteria set candidate_criteria_norm_form = ?, candidate_criteria_expression = ? , 
-                                     generated_date = ?, marked_done_date = NULL 
+        cur.execute("""update candidate_criteria set candidate_criteria_norm_form = %s, candidate_criteria_expression = %s , 
+                                     generated_date = %s, marked_done_date = NULL 
 
-                                        where nct_id = ? and criteria_type_id = ? and display_order = ?
+                                        where nct_id = %s and criteria_type_id = %s and display_order = %s 
                                      """, [perf_norm_form, perf_exp, datetime.datetime.now(), t[0], crit_map['perf'], pc[4]])
 
     i = i + 1
@@ -705,7 +717,7 @@ select descendant as ncit_code from ncit_tc where parent in ( 'C17021', 'C21176'
 )
 select distinct sv.ncit_code, sv.display_order, sv.pref_name   
 from nlp_data_tab sv join d_codes d on 
-sv.ncit_code = d.ncit_code where nct_id = ? and display_order = ? and  length(sv.span_text) > 3
+sv.ncit_code = d.ncit_code where nct_id = %s and display_order = %s and  length(sv.span_text) > 3
 """
 generate_ont_expression(con, crit_map['biomarker_inc'], biomarker_codes_sql)
 generate_ont_expression(con, crit_map['biomarker_exc'], biomarker_codes_sql)
@@ -720,9 +732,9 @@ where parent in ('C3262')
 )
 select distinct sv.ncit_code, sv.display_order, sv.pref_name   
 from nlp_data_tab sv join d_codes d on 
-sv.ncit_code = d.ncit_code where  length(span_text) > 4 and nct_id = ? and display_order = ?
+sv.ncit_code = d.ncit_code where  length(span_text) > 4 and nct_id = %s and display_order = %s 
 and 
-((sv.pref_name like '%hildhood%' and span_text  like '%hildhood%') or (sv.pref_name not like '%hildhood%'))
+((sv.pref_name like '%%hildhood%%' and span_text  like '%%hildhood%%') or (sv.pref_name not like '%%hildhood%%'))
 """
 generate_ont_expression(con, crit_map['disease_inc'], disease_codes_sql)
 
@@ -737,7 +749,7 @@ select descendant as ncit_code from ncit_tc where parent in ( 'C25294')
 )
 select distinct sv.ncit_code, sv.display_order, sv.pref_name   
 from nlp_data_tab sv join d_codes d on 
-sv.ncit_code = d.ncit_code where nct_id = ? and display_order = ? and  length(sv.span_text) > 3
+sv.ncit_code = d.ncit_code where nct_id = %s and display_order = %s and  length(sv.span_text) > 3
 """
 generate_ont_expression(con, crit_map['pt_inc'], prior_therapy_codes_sql)
 generate_ont_expression(con, crit_map['pt_exc'], prior_therapy_codes_sql)
