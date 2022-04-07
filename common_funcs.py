@@ -1,3 +1,7 @@
+#
+#  NOTE - please change this to match the database for use.
+#
+
 def get_criteria_type_map():
     d = {
         'biomarker_exc' : 1,
@@ -6,9 +10,9 @@ def get_criteria_type_map():
         'plt': 6,
         'wbc': 7,
         'perf': 8,
-        'bmets': 35,
-        'pt_inc': 36,
-        'pt_exc': 37,
-        'disease_inc' : 38
+        'bmets': 11,
+        'pt_inc': 12,
+        'pt_exc': 18,
+        'disease_inc' : 19 
     }
     return d
