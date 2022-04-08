@@ -131,8 +131,8 @@ def get_all_ncit_codes_for_span(con, a_span):
     return rs
 
 cur.execute(get_trials_sql)
-con.commit()
 trial_list_for_processing = cur.fetchall()
+con.commit()
 
 print("there are ", len(trial_list_for_processing), " trials to tokenize ")
 
@@ -143,7 +143,7 @@ print(f"{'Count' : <8}{'  NCT ID': <15}{'RVD' : ^30}{'Amendment Date' : ^30}{'Pr
 
 
 for t in trial_list_for_processing:
-    print(f"{i+1: <8}{t[0]: <15}{t[1] or '': ^30}{t[2] or '': ^30}{t[3] or '': ^30}")
+    print(f"{i+1: <8}{t[0]: <15}{str(t[1]) if t[1] is not None else '': <30}{str(t[2]) if t[2] is not None else '': <30}{str(t[3]) if t[3] is not None else '' : <30}")
     cur.execute(get_crit_sql, [t[0]])
     con.commit()
     crits = cur.fetchall()

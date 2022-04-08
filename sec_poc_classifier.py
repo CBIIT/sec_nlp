@@ -134,8 +134,7 @@ con.commit()
 i = 1
 for trial in trials_to_classify:
     nct_id = trial[0]
-    print(f"{i: <8}{trial[0]: <15}{trial[1] or '': ^30}{trial[2] or '': ^30}{trial[3] or '': ^30}{trial[4] or '': ^30}")
-
+    print(f"{i: <8}{trial[0]: <15}{str(trial[1]) if trial[1] is not None else '': ^30}{str(trial[2]) if trial[2] is not None else '': ^30}{str(trial[3]) if trial[3] is not None else '': ^30}{str(trial[4]) if trial[4] is not None else '': ^30}")
     cur.execute("delete from candidate_criteria where nct_id = %s ", [nct_id])
 
     check_for_concepts(con, nct_id, crit_map['perf'], ['C20641'],True, ncit_codes_to_remove=['C116664', 'C161964'])   # Performance status
