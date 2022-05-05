@@ -8,6 +8,8 @@ import psycopg2
 import psycopg2.extras
 
 import sys
+from bz2 import (compress, decompress)
+from pickle import (dumps, loads)
 
 nlp = spacy.blank("en")
 #nlp = spacy.load("en_core_web_sm")
@@ -29,28 +31,15 @@ cur = con.cursor()
 start_nlp_init = datetime.datetime.now()
 print("Initializing NLP at ", start_nlp_init)
 rs = []
-sql = '''select code, synonyms from ncit 
-where (concept_status is null or (concept_status not like '%Obsolete%' and concept_status not like '%Retired%') ) 
-/* and (lower(synonyms) like '%chemotherapy%' or lower(synonyms) like '%ecog%' or lower(synonyms) like '%white blood cell%') */
-'''
-cur = con.cursor()
-cur.execute(sql)
-r = cur.fetchall()
-for rec in r:
-    c = rec[0]
-    synonyms = rec[1].split('|')
-    newlist = list(zip([c] * len(synonyms), synonyms))
-    rs.extend(newlist)
-   # print(rs)
 
-terms = rs
-# Only run nlp.make_doc to speed things up
-start_pattern_time = datetime.datetime.now()
-patterns = [nlp.make_doc(v[1]) for v in rs]
-end_pattern_time = datetime.datetime.now()
-print("pattern creation in ", end_pattern_time - start_pattern_time)
+# matcher.add("TerminologyList", patterns)
 
-matcher.add("TerminologyList", patterns)
+nlp = spacy.blank("en")
+NLP_PICKLE_SQL = '''select ncit_tokenizer from ncit_version where active_version='Y' limit 1'''
+rs = cur.execute(NLP_PICKLE_SQL)
+pickled = cur.fetchone()[0]
+uncompressed_pickle = decompress(pickled)
+matcher = loads(uncompressed_pickle)
 
 end_nlp_init = datetime.datetime.now()
 print("NLP Init complete at", end_nlp_init, " elapsed time = ", end_nlp_init - start_nlp_init)
