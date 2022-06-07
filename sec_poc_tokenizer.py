@@ -151,9 +151,10 @@ for t in trial_list_for_processing:
         filtered_spans = spacy.util.filter_spans(spans)
        # print(filtered_spans)
         for f in filtered_spans:
-           # print(f.lower_)
+            lower_f = f.text.lower()
+            #print(lower_f)
             try:
-                float(f.lower_)
+                float(lower_f)
                 is_a_float = True
             except:
                 is_a_float = False
@@ -161,16 +162,16 @@ for t in trial_list_for_processing:
             if(not is_a_float):
                 #cur.execute(get_best_ncit_code_sql_for_span, [f.lower_])
                # bcodes = cur.fetchall()
-                bcodes = get_best_ncit_code_for_span(con, f.lower_)
+                bcodes = get_best_ncit_code_for_span(con, lower_f)
                 if len(bcodes) > 0:
                     for one_code in bcodes :
-                        cur.execute(ins_code_sql, [crit[0], crit[1], one_code[0], f.lower_, f.start_char, f.end_char])
+                        cur.execute(ins_code_sql, [crit[0], crit[1], one_code[0], lower_f, f.start_char, f.end_char])
                 else:
                     #cur.execute(get_ncit_code_sql_for_span, [f.lower_])
                     #rcodes = cur.fetchall()
-                    rcodes = get_all_ncit_codes_for_span(con, f.lower_)
+                    rcodes = get_all_ncit_codes_for_span(con, lower_f)
                     for one_code in rcodes:
-                        cur.execute(ins_code_sql, [crit[0], crit[1], one_code[0], f.lower_, f.start_char, f.end_char])
+                        cur.execute(ins_code_sql, [crit[0], crit[1], one_code[0], lower_f, f.start_char, f.end_char])
         #con.commit()
     cur.execute('select count(*) from trial_nlp_dates where nct_id = %s', [t[0]] )
     hm = cur.fetchone()[0]
