@@ -740,12 +740,33 @@ generate_ont_expression(con, crit_map['disease_inc'], disease_codes_sql)
 
 
 prior_therapy_codes_sql = """
-with d_codes as 
-(
+with bad_codes as (
+select descendant  from ncit_tc where parent in ( 'C25294') 
+UNION
+select 'C305' as descendant -- bilirubin
+union 
+select 'C399' as descendant -- creatinine
+union 
+select 'C37932' as descendant -- contraception  
+union 
+select 'C92949' as descendant -- pregnancy test
+UNION
+select 'C173045' as descendant -- ability question
+union 
+select 'C65141' as descendant -- juice
+UNION
+select 'C1505' as descendant -- dietary supplment
+UNION
+select 'C71961' as descendant -- grapefruit juice
+UNION
+select 'C71974' as descendant -- grapefruit
+),
+d_codes as (
+
 select descendant as ncit_code from ncit_tc
 where parent in ('C25218', 'C1908', 'C62634', 'C163758')  
 except 
-select descendant as ncit_code from ncit_tc where parent in ( 'C25294') 
+select descendant  from bad_codes
 )
 select distinct sv.ncit_code, sv.display_order, sv.pref_name   
 from nlp_data_tab sv join d_codes d on 
