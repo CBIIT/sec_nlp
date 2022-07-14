@@ -760,6 +760,8 @@ UNION
 select 'C71961' as descendant -- grapefruit juice
 UNION
 select 'C71974' as descendant -- grapefruit
+UNION
+select 'C16124' as descendant -- prior therapy
 ),
 d_codes as (
 
