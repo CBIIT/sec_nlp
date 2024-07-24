@@ -20,7 +20,6 @@ create table ncit_nlp_concepts
 create index nlp_nct_id_idx on ncit_nlp_concepts(nct_id);
 create index nlp_nct_id_ncit_code_idx on ncit_nlp_concepts(nct_id, ncit_code);
 create index nlp_ncit_code_idx on ncit_nlp_concepts(ncit_code);
-create index cand_crit_type_idx on candidate_criteria(nct_id, criteria_type_id);
 
 drop view if exists nlp_data_view;
 create view nlp_data_view as
@@ -40,7 +39,7 @@ create index ncit_syns_code_idx on ncit_syns(code);
 create index ncit_syns_syn_name on ncit_syns(syn_name);
 create index ncit_lsyns_syn_name on ncit_syns(l_syn_name);
 
-#create index ncit_lower on ncit(lower(pref_name));
+create index ncit_lower on ncit(lower(pref_name));
 
 drop table if exists candidate_criteria ;
 create table candidate_criteria (
@@ -56,7 +55,7 @@ marked_done_date date
 );
 -- alter table candidate_criteria add candidate_criteria_norm_form text
 -- alter table candidate_criteria add candidate_criteria_expression text
-indexes --
+-- indexes --
 
 drop view if exists candidate_criteria_view;
 create view candidate_criteria_view as
@@ -69,14 +68,8 @@ left outer join trial_criteria tc on cc.nct_id = tc.nct_id and cc.criteria_type_
 order by cc.nct_id, cc.criteria_type_id
 ;
 
-create table nlp_data_tab as select nct_id, ncit_code, display_order, pref_name, span_text, start_index, end_index, inclusion_indicator, description
-from nlp_data_view
 
-create index nlp_dt_ncit_code on nlp_data_tab(ncit_code);
-create index nlp_dt_nct_id on nlp_data_tab(nct_id);
 -------------
-# Just sample stuff below here.
-
 
 with performance_statuses as
 ( select descendant from ncit_tc where parent = 'C20641')
@@ -108,4 +101,3 @@ with codes_of_interest as
 /* ( select descendant from ncit_tc where parent in( 'C45576')) */
 select n.nct_id, n.ncit_code, n.pref_name, n.span_text,n.inclusion_indicator, n.description
 from nlp_data_view n join codes_of_interest ps on n.ncit_code = ps.descendant
-
