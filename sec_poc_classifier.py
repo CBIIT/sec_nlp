@@ -58,15 +58,17 @@ def check_for_concepts(con, nct_id, criteria_type_id, ncit_codes, inclusion_indi
     cur = con.cursor()
     cur.execute(num_crits_for_trial_sql, [nct_id,inclusion_indicator])
     num_crits = cur.fetchone()[0]
-    #print(num_crits)
+    # If the trial doesn't have any unstructured criteria matching the provided inclusion indicator,
+    # then it won't have any predicted NLP concepts.
     if num_crits >= 1:
-        # Iterate through and get the distinct criteria
+        # Iterate through and get the distinct criteria.
+        # Some criterions' descriptions are repeated for each inclusion scenario.
         t = set()
         for crit in d:
+            # description (str), display_order (int), inclusion_indicator (bool)
             t.add( (crit[6], crit[1], crit[5] ))
 
         for c in t:
-           # print(crit)
             ins_sql = """
             insert into candidate_criteria(nct_id, criteria_type_id,  candidate_criteria_text, display_order,inclusion_indicator) values (%s,%s,%s,%s,%s)
             """

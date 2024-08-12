@@ -11,10 +11,6 @@ import sys
 from bz2 import (compress, decompress)
 from pickle import (dumps, loads)
 
-nlp = spacy.blank("en")
-#nlp = spacy.load("en_core_web_sm")
-matcher = PhraseMatcher(nlp.vocab, attr='LOWER')
-
 parser = argparse.ArgumentParser(description='Parse NCI codes from the text')
 
 parser.add_argument('--dbname', action='store', type=str, required=False)

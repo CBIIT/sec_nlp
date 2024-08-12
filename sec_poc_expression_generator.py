@@ -29,10 +29,10 @@ def generate_ont_expression(con, criteria_type_id, get_codes_sql):
         print('Processing ', t[0], ' trial ', str(i), 'of', len(trials_to_process))
         cur.execute(cand_sql, [criteria_type_id, t[0]])
         cands = cur.fetchall()
-        #print('cands = ', cands)
         for bc in cands:
-            #print("bc", bc[0], bc[4], len(bc))
+            # bc[0] = nct_id, bc[4] = display_order
             r = cur.execute(get_codes_sql, [bc[0], bc[4]])
+            # r = [[ncit_code, display_order, pref_name]]
             print(r)
             t_codes = cur.fetchall()
             print(t_codes)
@@ -100,7 +100,9 @@ def process_numeric_crit(rs, regex, con, cur, criteria_type_id, ncit_code, lower
     exponents = collections.Counter()
     units = collections.Counter()
 
+    # r = [nct id, criteria type id, inclusion indicator, candidate criteria text, display order]
     for r in rs:
+        # Get candidate criteria text.
         t = r[3]
         parseable = re.sub('[,][0-9]{3}', lambda y: y.group()[1:],
                            t)  # get rid of the commas in numbers to help me stay sane
@@ -608,21 +610,21 @@ where (cc.generated_date is  NULL or cc.generated_date < nlp.classification_date
 cur.execute(perf_trials_to_process_sql, [crit_map['perf']])
 perf_trials_to_process = cur.fetchall()
 print("Processing Performance Status expressions")
-get_perf_codes_sql = """
-select  distinct ncit_code from candidate_criteria cc join ncit_nlp_concepts nlp on cc.nct_id = nlp.nct_id and cc.display_order = nlp.display_order
-where cc.nct_id = %s and cc.display_order = %s and cc.criteria_type_id = %s 
-"""
+# get_perf_codes_sql = """
+# select  distinct ncit_code from candidate_criteria cc join ncit_nlp_concepts nlp on cc.nct_id = nlp.nct_id and cc.display_order = nlp.display_order
+# where cc.nct_id = %s and cc.display_order = %s and cc.criteria_type_id = %s 
+# """
 perf_cand_sql = """
 select nct_id, criteria_type_id, inclusion_indicator, candidate_criteria_text, display_order from
 candidate_criteria where criteria_type_id = %s  and nct_id = %s 
 """
-ecog_codes_sql = """
-select descendant from ncit_tc where parent in  ('C105721', 'C25400') 
-"""
-cur.execute(ecog_codes_sql)
-ecog_rs = cur.fetchall()
-ecog_codes = [c[0] for c in ecog_rs]
-ecog_codes_set = set(ecog_codes)
+# ecog_codes_sql = """
+# select descendant from ncit_tc where parent in  ('C105721', 'C25400') 
+# """
+# cur.execute(ecog_codes_sql)
+# ecog_rs = cur.fetchall()
+# ecog_codes = [c[0] for c in ecog_rs]
+# ecog_codes_set = set(ecog_codes)
 i = 1
 karnofsky_to_ecog = {100: 0, 90: 0, 80: 1, 70: 1, 60: 2, 50: 2, 40: 3, 30: 3, 20: 4, 10: 4, 0: 5}
 for t in perf_trials_to_process:
@@ -741,7 +743,7 @@ generate_ont_expression(con, crit_map['disease_inc'], disease_codes_sql)
 
 prior_therapy_codes_sql = """
 with bad_codes as (
-select descendant  from ncit_tc where parent in ( 'C25294') 
+select descendant  from ncit_tc where parent in ('C25294', 'C102116') 
 UNION
 select 'C305' as descendant -- bilirubin
 union 
