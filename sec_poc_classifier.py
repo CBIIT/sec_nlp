@@ -58,15 +58,17 @@ def check_for_concepts(con, nct_id, criteria_type_id, ncit_codes, inclusion_indi
     cur = con.cursor()
     cur.execute(num_crits_for_trial_sql, [nct_id,inclusion_indicator])
     num_crits = cur.fetchone()[0]
-    #print(num_crits)
+    # If the trial doesn't have any unstructured criteria matching the provided inclusion indicator,
+    # then it won't have any predicted NLP concepts.
     if num_crits >= 1:
-        # Iterate through and get the distinct criteria
+        # Iterate through and get the distinct criteria.
+        # Some criterions' descriptions are repeated for each inclusion scenario.
         t = set()
         for crit in d:
+            # description (str), display_order (int), inclusion_indicator (bool)
             t.add( (crit[6], crit[1], crit[5] ))
 
         for c in t:
-           # print(crit)
             ins_sql = """
             insert into candidate_criteria(nct_id, criteria_type_id,  candidate_criteria_text, display_order,inclusion_indicator) values (%s,%s,%s,%s,%s)
             """
@@ -137,6 +139,9 @@ for trial in trials_to_classify:
     print(f"{i: <8}{trial[0]: <15}{str(trial[1]) if trial[1] is not None else '': ^30}{str(trial[2]) if trial[2] is not None else '': ^30}{str(trial[3]) if trial[3] is not None else '': ^30}{str(trial[4]) if trial[4] is not None else '': ^30}")
     cur.execute("delete from candidate_criteria where nct_id = %s ", [nct_id])
 
+    # See https://bioappdev.atlassian.net/browse/POC-80
+    # C116664 should be removed from performance status
+    # C161964 permitted as a prior therapy but not a performance status
     check_for_concepts(con, nct_id, crit_map['perf'], ['C20641'],True, ncit_codes_to_remove=['C116664', 'C161964'])   # Performance status
     check_for_concepts(con, nct_id, crit_map['wbc'], ['C51948'],True, include_descendants=False) # WBC
     check_for_concepts(con, nct_id, crit_map['plt'], ['C51951'],True)    # PLT
@@ -144,7 +149,7 @@ for trial in trials_to_classify:
     check_for_concepts(con, nct_id, crit_map['bmets'], ['C4015'],False)    # BMETS
     #check_for_concepts(con, nct_id, 1, ['C3910','C16612'],0, ncit_codes_to_remove= ['C90505'] )    # BIOMARKER EXC
     check_for_concepts(con, nct_id, crit_map['biomarker_exc'], ['C3910','C16612', 'C26548'],False, ncit_codes_to_remove= [ 'C74944','C17021', 'C21176','C25294'])    # BIOMARKER EXC
-    check_for_concepts(con, nct_id, crit_map['biomarker_inc'], ['C3910','C16612', 'C26548'],True, ncit_codes_to_remove= ['C74944 ','C17021', 'C21176','C25294'] )    # BIOMARKER INC
+    check_for_concepts(con, nct_id, crit_map['biomarker_inc'], ['C3910','C16612', 'C26548'],True, ncit_codes_to_remove= ['C74944','C17021', 'C21176','C25294'] )    # BIOMARKER INC
 
 
     # PT -- need to split these out for inc/exclusion
