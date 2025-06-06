@@ -13,11 +13,13 @@ NCT03488693,Mastectomy,"Patients must have been treated by breast conserving sur
 NCT03556228,Antineoplastic Agent,"Histologically or cytologically confirmed diagnosis of any type of solid tumor malignancy or lymphoma that is not responsive to standard therapies or had progressed following standard therapy and for which there is no approved or curative therapy"
 NCT03602157,Brentuximab Vedotin,"These prior treatment regimens must include brentuximab vedotin"
 NCT03618550,Multiple Agent Systemic Chemotherapy,"Relapse or refractory disease following 1 line of multi-agent chemotherapy (not including pembro-GVD)"
-NCT03708224,Biopsy,"Agree to research analysis of an existing pre-treatment biopsy available that was obtained within 90 days prior to the day of consent"
-NCT03710421,Anti-CD38 Monoclonal Antibody,"Participant must have received prior treatment with an anti‐CD38 antibody"
-NCT03710421,Immunotherapy,"Participant must have received prior treatment with an immunomodulatory agent"
-NCT03710421,Proteasome Inhibitor,"Participant must have received prior treatment with a proteasome inhibitor"
+NCT03708224,Biopsy,"Agree to research analysis of an existing pre-treatment biopsy available that was obtained within 90 days prior to the day of consent or agree to a new biopsy for research (or clinical diagnosis) within the screening window"
+NCT03710421,Anti-CD38 Monoclonal Antibody,"Participant must have relapsed or refractory disease after all 3 prior treatment regimens with the following requirements:
+* Participant must have received prior treatment with an immunomodulatory agent.
+* Participant must have received prior treatment with a proteasome inhibitor.
+* Participant must have received prior treatment with an anti‐CD38 antibody."
 NCT03734692,Platinum Compound,"Patients must have completed prior platinum-based therapy"
+NCT03734692,Platinum Compound,"Patients must be platinum-sensitive, defined as having a progression free interval (PFI) of more than 6 months (180 days) from any platinum therapy. Patients are allowed to have had other lines of therapy since last platinum if PFI after platinum therapy meets platinum sensitive criteria."
 NCT03761108,Proteasome Inhibitor,"Patients with MM whose disease meets the following criteria: a. Progression on or after at least 3 prior lines of therapy including a(n) PI, IMiD, and anti-CD38 antibody, OR b. Patients must be triple-refractory, defined as being refractory to prior treatment with at least 1 anti-CD38 antibody, a proteasome inhibitor, and an IMiD."
 NCT03761108,Immunomodulatory Imide Drug,"including either: a. Progression on or after at least 3 lines of therapy, or intolerance of therapy, including a proteasome inhibitor, an Immunomodulatory agent (IMiD), and an anti-CD38 antibody, OR b. Progression on or after an anti-CD38 antibody and have disease that is ""double refractory"" to a proteasome inhibitor and an IMiD, or intolerance of therapy."
 NCT03785288,Total Abdominal Hysterectomy with Bilateral Salpingo-Oophorectomy,"Surgery consisted of total abdominal or laparoscopic hysterectomy and bilateral salpingo oophorectomy (TH-BSO) with or without lymph node dissection"

@@ -1,0 +1,100 @@
+﻿nct_id,name
+NCT02452008,Abiraterone
+NCT02734537,Gross Total Resection
+NCT03104491,Allogeneic Hematopoietic Stem Cell Transplantation
+NCT03161431,Anti-PD1 Monoclonal Antibody
+NCT03164460,Radiation Therapy
+NCT03180268,Gross Total Resection
+NCT03186898,Computed Tomography
+NCT03277638,Radiation Therapy
+NCT03277638,Temozolomide
+NCT03422198,Hysterectomy
+NCT03465592,Allogeneic Bone Marrow Transplantation
+NCT03465592,Reduced-Intensity Transplant Conditioning Procedure
+NCT03488693,Breast Conservation Treatment
+NCT03488693,Mastectomy
+NCT03556228,Antineoplastic Agent
+NCT03602157,Brentuximab Vedotin
+NCT03618550,Multiple Agent Systemic Chemotherapy
+NCT03708224,Biopsy
+NCT03710421,Anti-CD38 Monoclonal Antibody
+NCT03710421,Immunotherapy
+NCT03710421,Proteasome Inhibitor
+NCT03734692,Platinum Compound
+NCT03761108,Proteasome Inhibitor
+NCT03761108,Immunomodulatory Imide Drug
+NCT03761108,Anti-CD38 Monoclonal Antibody
+NCT03785288,Total Abdominal Hysterectomy with Bilateral Salpingo-Oophorectomy
+NCT03785288,Total Abdominal Hysterectomy
+NCT03819296,Immune Checkpoint Inhibitor
+NCT03900793,Systemic Therapy
+NCT03987386,Radical Prostatectomy
+NCT04038619,Immune Checkpoint Inhibitor
+NCT04090567,PARP Inhibitor
+NCT04134260,Radical Prostatectomy
+NCT04174352,Prior Hormone Therapy
+NCT04175431,Radical Prostatectomy
+NCT04189757,Ibrutinib
+NCT04189757,Rituximab
+NCT04219254,Anti-PD-L1 Monoclonal Antibody
+NCT04219254,Anti-PD1 Monoclonal Antibody
+NCT04270175,Daratumumab
+NCT04305834,Hormone Therapy
+NCT04332367,Pembrolizumab
+NCT04337580,Docetaxel
+NCT04340882,PD-L1 Inhibitor
+NCT04340882,Platinum Compound
+NCT04375384,PD1 Inhibitor
+NCT04407247,Immune Checkpoint Inhibitor
+NCT04415944,Platinum Compound
+NCT04415944,Cytoreductive Surgery
+NCT04419519,Venetoclax
+NCT04423211,Radical Prostatectomy
+NCT04434040,Breast Surgery
+NCT04434040,Antineoplastic Agent
+NCT04484012,BTK Inhibitor
+NCT04493203,PD1 Inhibitor
+NCT04508790,Immunotherapy
+NCT04508790,Proteasome Inhibitor
+NCT04527900,Hysterectomy
+NCT04548752,Platinum Compound
+NCT04567771,Robotic Hysterectomy
+NCT04567771,Total Abdominal Hysterectomy
+NCT04567771,Vaginal Hysterectomy
+NCT04567771,Radical Hysterectomy
+NCT04579224,Enfortumab Vedotin
+NCT04585958,Cytotoxic Chemotherapy
+NCT04599140,Oxaliplatin
+NCT04599140,Fluoropyrimidine
+NCT04599140,Prior Adjuvant Chemotherapy
+NCT04599140,Irinotecan
+NCT04665947,Systemic Therapy
+NCT04671667,Gross Total Resection
+NCT04691817,Immune Checkpoint Inhibitor
+NCT04713046,Platinum Compound
+NCT04742634,Allogeneic Hematopoietic Stem Cell Transplantation
+NCT04768426,Definitive Surgical Resection
+NCT04781192,PD-L1 Inhibitor
+NCT04781192,CTLA-4 Inhibitor
+NCT04781192,PD1 Inhibitor
+NCT04852887,Lumpectomy
+NCT04858009,Systemic Chemotherapy
+NCT04858334,Resection
+NCT04868604,Antiandrogen Therapy
+NCT04876456,Cisplatin
+NCT04883242,Lenalidomide
+NCT04895436,Venetoclax
+NCT04895436,Anti-CD20 Antibody
+NCT04915508,Radical Prostatectomy
+NCT04919369,Prior Chemotherapy
+NCT04919369,Prior Immunotherapy
+NCT04925479,Tyrosine Kinase Inhibitor
+NCT04960579,Immunomodulatory Imide Drug
+NCT04960579,Proteasome Inhibitor
+NCT04960579,Anti-CD38 Monoclonal Antibody
+NCT04963153,Platinum Compound
+NCT04966481,Antineoplastic Agent
+NCT04971499,Anti-PD1 Monoclonal Antibody
+NCT04974671,Immune Checkpoint Inhibitor
+NCT04977024,Hematopoietic Cell Transplantation
+NCT05002816,Proteasome Inhibitor
