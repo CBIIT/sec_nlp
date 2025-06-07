@@ -20,6 +20,7 @@ NCT03708224,Biopsy
 NCT03710421,Anti-CD38 Monoclonal Antibody
 NCT03710421,Immunotherapy
 NCT03710421,Proteasome Inhibitor
+NCT03728335,Allogeneic Hematopoietic Stem Cell Transplantation
 NCT03734692,Platinum Compound
 NCT03761108,Proteasome Inhibitor
 NCT03761108,Immunomodulatory Imide Drug

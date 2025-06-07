@@ -1,14 +1,23 @@
 ﻿nct_id,display_order,candidate_criteria_text
-NCT02452008,1,"patients may have had prior therapy including sipuleucel-T, radium-223, abiraterone, ketoconazole, and/or Tak-700"
-NCT02452008,1,"however, six cycles of docetaxel are allowed in hormone-sensitive disease)"
+NCT02452008,1,"Have metastatic castration-resistant prostate cancer, are chemo-naïve for mCRPC (however, six cycles of docetaxel are allowed in hormone-sensitive disease), and have progressed on abiraterone treatment (patients may have had prior therapy including sipuleucel-T, radium-223, abiraterone, ketoconazole, and/or Tak-700); progression on abiraterone is defined as
+* Radiologic progression by Response Evaluation Criteria in Solid Tumors (RECIST) 1.1 and Prostate Cancer Working Group (PCWG)2 criteria, or 
+* PSA progression on abiraterone:
+** For responders to abiraterone: 25% or greater increase and an absolute increase of 2 ng/mL or more from the nadir, confirmed by a second value obtained 2 or more weeks later
+** For non-responders to abiraterone: 25% increase above baseline with an increase in absolute value of 2 ng/mL or more after 12 weeks of treatment"
+NCT02452008,2,Have a pathological diagnosis of prostate carcinoma
 NCT02452008,3,Patients may be receiving continuous hormonal ablation with surgical or medical castration with baseline testosterone < 50ng/dL
+NCT02452008,5,Must have had prior abiraterone treatment
 NCT02452008,15,Aspartate aminotransferase (AST) serum glutamic oxaloacetic transaminase (SGOT)/alanine aminotransferase (ALT) serum glutamate pyruvate transaminase (SGPT) =< 2.5 x ULN (< 5 x ULN if with known liver metastases provided bilirubin is normal)
 NCT02452008,16,"Creatinine =< 2.0 x ULN (for patients with > 1.5 x ULN, calculated or measured creatinine clearance must be = 40 mL/minute [Cockcroft-Gault])."
 NCT02452008,17,"Men of reproductive potential and those who are surgically sterilized (i.e., postvasectomy) must agree to practice effective barrier contraception that has an expected failure rate of < 1% during and for 6 months after discontinuation of study treatment
 * If condoms are used as a barrier contraceptive, a spermicidal agent should be added to ensure that pregnancy does not occur"
+NCT02734537,4,"Patient has undergone total resection of the primary tumor with curative intent
+* NOTE: Patient is to be pre-registered to screening (Step 0) and tissue submitted to Foundation Medicine as soon as possible after surgery in order to meet the 8 week deadline to register the patient to Step 1 after surgery; full assay minimum turn-around time is 17-24 days"
 NCT02734537,8,Patients with a history of a curatively treated malignancy must be disease-free for at least two years except for carcinoma in situ of cervix and/or non-melanomatous skin cancer; patients must not have received chemotherapy or investigational therapy within two years of surgical resection of the primary tumor
+NCT02734537,13,"Per the operative report, the gross total resection of the primary tumor with curative intent was completed within 8 weeks prior to randomization"
 NCT02734537,16,"Women must not be pregnant or breast-feeding due to exposure to cisplatin chemo-and/or radiotherapy; females of childbearing potential must have a blood or urine study within 2 weeks prior to randomization to rule out pregnancy; a female of childbearing potential is any woman, regardless of sexual orientation or whether they have undergone tubal ligation, who meets the following criteria: 1) has not undergone a hysterectomy or bilateral oophorectomy; or 2) has not been naturally postmenopausal for at least 24 consecutive months (i.e., has had menses at any time in the preceding 24 consecutive months)"
 NCT02734537,17,Women of childbearing potential and sexually active males must be strongly advised to use an accepted and effective method of contraception or to abstain from sexual intercourse for the duration of their participation in the study and until 60 days from the last study treatment
+NCT03104491,2,PHASE I: Patients who underwent an allogeneic hematopoietic stem cell transplantation from any donor source for acute lymphocytic leukemia
 NCT03104491,3,PHASE I: Patients who are between T+40 and T+100 after allogeneic transplantation. Patients must receive their first dose of inotuzumab at or before T+100
 NCT03104491,4,"PHASE I: Patients who have/are either:
 * Transplanted in hematologic first complete remission with evidence of minimal residual disease within 45 days of allogeneic transplantation
@@ -21,6 +30,7 @@ NCT03104491,4,"PHASE I: Patients who have/are either:
 * Philadelphia-like ALL"
 NCT03104491,5,PHASE I: Patients who have evidence of donor chimerism after allogeneic transplantation
 NCT03104491,8,"PHASE I: Subjects must have absolute neutrophil count (ANC) > 1,000/uL for 3 days and platelet transfusion independence as defined as a platelet count > 50,000/uL for 7 days"
+NCT03104491,12,PHASE II: Patients who underwent an allogeneic hematopoietic stem cell transplantation from any donor source for acute lymphocytic leukemia
 NCT03104491,13,PHASE II: Patients who are between T+40 and T+100 after allogeneic transplantation. Patients who received myeloablative conditioning must start between T+70 and T+100. Patients must receive their first dose of inotuzumab at or before T+100
 NCT03104491,14,"PHASE II: Patients who have/are either:
 * Transplanted in hematologic first complete remission with evidence of minimal residual disease within 45 days of allogeneic transplantation
@@ -33,6 +43,7 @@ NCT03104491,14,"PHASE II: Patients who have/are either:
 * Philadelphia-like ALL"
 NCT03104491,15,PHASE II: Patients who have >= 80% donor chimerism after allogeneic transplantation
 NCT03104491,19,"PHASE II: Subjects must have ANC > 1,000/uL for 3 days and platelet transfusion independence as defined as a platelet count > 50,000/uL for 7 days"
+NCT03161431,10,"Prior disease progression on anti-PD1 therapy (i.e., anti-PD1 or anti-PD-L1, including prior adjuvant). Prior anti-PD1 therapy must have been completed prior to first dose of SX-682, and all adverse events related to prior therapy have either returned to baseline or stabilized (other than endocrine toxicity for which medical replacement therapy is in place)."
 NCT03161431,14,"Screening laboratory values must meet the following criteria and should be obtained within 14 days prior to first dose: WBC > 3000/µL Neutrophils > 1500/ µL Platelets > 100,000/µL Hemoglobin > 9.0 g/dL (may have been transfused) Creatinine < 1.5 mg/dL AST/ALT < 2.5 X ULN for subject with no liver metastases < 5 X ULN for subjects with liver metastases Bilirubin < 1.5 mg/dL (unless diagnosed with Gilbert's syndrome, who can have total bilirubin < 3.0 mg/dL) INR or PT < 1.5 X ULN unless the subject is receiving anticoagulant therapy aPTT or PTT < 1.5 X ULN unless the subject is receiving anticoagulant therapy"
 NCT03161431,21,Women of childbearing potential (WOCBP) must use method(s) of contraception (as will be explained in detail) while on study and for 4 months after the last dose of SX-682 or pembrolizumab. A WOCBP is defined as any female who has experienced menarche and who has not undergone surgical sterilization (hysterectomy or bilateral oophorectomy) or is not postmenopausal. Menopause is defined clinically as 12 months of amenorrhea in a woman over age 45 in the absence of other biological or physiological causes.
 NCT03161431,23,Women must have a negative serum or urine pregnancy test (minimum sensitivity 25 IU/L or equivalent units of HCG) within 24 hours prior to the start of study drug.
@@ -40,14 +51,20 @@ NCT03161431,26,Women who are not of childbearing potential and azoospermic men d
 NCT03164460,3,Gross disease apparent on imaging (magnetic resonance imaging [MRI] or computed tomography [CT])
 NCT03180268,3,Gross total resection (GTR) will be interpreted as modified Simpson grade 1-3 without gross residual dural-based or extradural tumor. GTR must be confirmed both by modified Simpson grade and by post-operative magnetic resonance imaging (MRI) findings. The modified Simpson grade can be inferred from the operative report (surgeon does not need to explicitly describe the Simpson grade for the purposes of eligibility)
 NCT03180268,4,"Step 1 registration must occur within 180 days of the initial surgery; this will provide sufficient time for post-operative imaging confirmation of resection extent after resolution of operative changes. Moreover, it will permit additional surgery if needed to achieve a GTR. Within this 180 day interval, a second surgery is permitted in order to achieve GTR, but even with a second surgery, Step 1 registration must occur within 180 days of the initial resection"
+NCT03180268,5,"GTR must be confirmed on post-operative imaging following the most recent surgery. For protocol enrollment, the assessment of GTR will be made at each site. However, submission of both pre-operative and post-operative MRIs is required for patients. If a second surgery is performed, submission of post-operative MRI is required and pre-operative MRI is required only if obtained. All sequences obtained in the pre- and post-operative MR imaging are to be submitted to National Radiology Group (NRG) Oncology for study registration. The post-operative MRI must be completed within sufficient time to permit step 1 registration within 180 days of the initial resection. These same conditions apply in the setting of a second surgical procedure, although if a second surgery is completed, step 1 registration must still occur with 180 days of initial surgery. Computed tomography (CT) imaging is not required, but may be obtained if desired clinically, for instance to assess calcifications or hyperostosis"
 NCT03180268,11,"History/physical examination, including neurologic examination within 60 days prior to step 2 registration"
 NCT03180268,13,"If the patient is a woman is of childbearing potential, a serum pregnancy test, obtained within 14 days prior to step 2 registration, must be negative, and, if randomized to receive radiation therapy, the woman must agree to use contraception"
+NCT03186898,2,"Appropriate stage for study entry based on the following diagnostic workup:
+* All patients must have computed tomography (CT) scan chest/abdomen/pelvis with multiphasic liver CT scan prior to registration; if CT contrast is contraindicated, CT chest without contrast and magnetic resonance imaging (MRI) of abdomen is permitted
+* Participants must have measurable disease at study entry, defined as at least one lesion that can be accurately measured in at least one dimension (longest diameter to be recorded) as > 2 cm with conventional techniques or as > 1 cm with spiral CT scan
+* Patient must have 3 or fewer single or multinodular tumors; for patients with a single lesion, lesion must be 15 cm or less in greatest dimension; for patients with two lesions, no lesion may be greater than 10 cm in greatest dimension; for patients with three lesions, no lesion may be greater than 6 cm in greatest dimension; portal vein involvement or thrombosis combined with a single lesion that is >= 1 cm and =< 15 cm in greatest dimension is allowed"
 NCT03186898,11,Albumin >= 2.5 g/dl
 NCT03186898,12,Creatinine < 2 mg/dl
 NCT03186898,13,"Prior chemotherapy, targeted biological therapy (e.g. sorafenib), surgery, transarterial chemoembolization (TACE), ablation for present disease is acceptable"
 NCT03277638,4,History/physical examination within 7 days prior to registration
 NCT03277638,9,"Creatine =< 1.7 x upper limit of normal (ULN) OR measure or calculated creatinine clearance (glomerular filtration rate [GFR] can also be used in place of creatinine or creatinine clearance [CrCl]) >= 70.0 mL/min for subject with creatinine levels > 1.5 X institutional ULN (within 7 days of registration)
 * Creatinine clearance should be calculated per institutional standard"
+NCT03277638,14,The patient must have completed chemoradiation with radiation therapy and temozolomide of the primary tumor according to standards of care
 NCT03277638,15,The treating physician expects that the patient will not require more than physiologic replacement dose of steroids defined as4 mg of dexamethasone per day or its equivalent.
 NCT03277638,20,Male subjects must agree to use an adequate method of contraception for the duration of the study through 120 days after the last dose of study therapy
 NCT03277638,23,It is permissible to plan combined LITT followed by immediate post LITT tumor debulking in the same operation for tumors at the discretion of the surgeon with goal of avoiding post-LITT swelling and ICP issues as long as >= 1 cm^3 of tumor is left as “index lesion”
@@ -61,6 +78,7 @@ NCT03422198,1,"Histologically confirmed endometrial carcinoma: endometrioid type
 * Stage IB, grades 1-3
 * Stage II, grades 1-3
 * Stage IIIA, grades 1-3, not receiving external beam radiation therapy (EBRT) as part of adjuvant therapy"
+NCT03422198,2,Patients post hysterectomy and free from residual disease
 NCT03465592,6,Concomitant radiation therapy can be administered in the setting of this trial.
 NCT03465592,7,"Subjects must consent to allow for a baseline tumor biopsy. If a biopsy is not feasible, then archival tumor material must be made available. Tumor biopsies to be taken (if a subject’s tumor is thought to be reasonably safe and easy to biopsy) at baseline (any time prior to the first dose after eligibility is met) and at cycle 2 (4-6 cores per time point) or when lesions are visualized on physical examination or imaging studies in the case of no identifiable masses at cycle 2. Additional optional biopsies may be obtained later in the course of study treatment. Detailed instructions for tissue collection, processing and shipment are provided. The proposed investigation is considered a non-significant risk (NSR). A significant risk procedure is generally considered to be one for which the procedure-associated absolute risk of mortality or major morbidity, in the patient’s clinical setting and at the institution completing the procedure, is 2% or higher. Diagnostic Tissue Samples Tissue, fluid, or blood may be collected from standard of care procedures used to treat or diagnose immune related toxicities/graft versus host disease (GVHD)."
 NCT03465592,11,"Creatinine clearance or radioisotope glomerular filtration rate (GFR) >= 70 ml/min/1.73 m^2 or a serum creatinine based on age/gender as follows:
@@ -72,6 +90,9 @@ NCT03465592,11,"Creatinine clearance or radioisotope glomerular filtration rate 
 * Age >= 16 years, Male: 1.7 and Female: 1.4 (maximum serum creatinine [mg/dl])"
 NCT03465592,12,Bilirubin (sum of conjugated + unconjugated) =< 1.5 x upper limit of normal (ULN) for age
 NCT03465592,13,"Serum glutamic pyruvate transaminase (SGPT) (alanine aminotransferase [ALT]) =< 110 U/L. For the purpose of this study, the ULN for SGPT is 45 U/L"
+NCT03488693,2,"Patients must have been treated by breast conserving surgery (BCS) or mastectomy
+Patients must have been treated by breast conserving surgery (BCS) or mastectomy with clear margins of excision
+* Patients treated by BCS with focally positive margins for invasive breast cancer or ductal carcinoma in situ (DCIS) (involving < 3 high power fields) are eligible if additional surgery is not possible, e.g. posterior margin positive and deep resection margin abuts the chest wall or anterior margin positive and superficial resection margin abuts the skin; boost radiotherapy must be administered for positive margins as described above"
 NCT03488693,3,Post-mastectomy positive margins for invasive breast cancer and/or DCIS is not allowed
 NCT03488693,8,"Patients with nodal macrometastases (> 2 mm) treated by sentinel lymph node biopsy (SLNB) alone must have only 1-2 positive axillary nodes (macrometastases, > 2 mm)
 * Note patients with additional nodal micrometastases (> 0.2-2mm) or isolated tumour cells (=< 0.2 mm) are eligible"
@@ -87,7 +108,9 @@ NCT03488693,22,"Women of childbearing potential must have agreed to use an effec
 NCT03556228,0,"Histologically or cytologically confirmed diagnosis of any type of solid tumor malignancy or lymphoma that is not responsive to standard therapies or had progressed following standard therapy and for which there is no approved or curative therapy. Additionally, patients must not be candidates for or have exhausted regimens known to provide clinical benefit, including hematopoietic stem cell transplantation in lymphoma patients if they are deemed transplant eligible."
 NCT03556228,5,"Subjects must have a tumor: (i). with TrkA protein overexpression (TrkA+) in the validated TrkA IHC assay, OR (ii). with documented NTRK1 gene fusion (NTRK1+) including a tumor which has progressed due to NTRK1 mutation after treatment of a pan-Trk inhibitor (e.g. larotrectinib or entrectinib)"
 NCT03556228,13,"Creatinine ≤1.2xULN for age, weight"
-NCT03602157,4,"* If the subject has Hodgkin lymphoma, the subject must have either failed autologous transplant or must not be eligible for autologous transplant.
+NCT03602157,4,"PRIOR TO CELL PROCUREMENT: Diagnosis of recurrent lymphoma in subjects who have failed >= 2 prior treatment regimens.
+* These prior treatment regimens must include brentuximab vedotin.
+* If the subject has Hodgkin lymphoma, the subject must have either failed autologous transplant or must not be eligible for autologous transplant.
 * If the subject has grey zone lymphoma, the subject must have failed an anthracycline containing regimen unless the subject was not previously a candidate for anthracycline.
 * Subjects relapsed after autologous or allogeneic stem cell transplant are eligible for this study."
 NCT03602157,11,PRIOR TO CELL PROCUREMENT: Subjects must not be using systemic corticosteroids at doses >= 10mg prednisone daily or its equivalent; those receiving < 10mg daily may be enrolled at discretion of the investigator.
@@ -120,6 +143,7 @@ NCT03602157,71,PRIOR TO INFUSION OF OPTIONAL REINFUSION: Bilirubin =< 2 times th
 NCT03602157,74,PRIOR TO INFUSION OF OPTIONAL REINFUSION: Serum Creatinine =< 3 times ULN.
 NCT03602157,75,PRIOR TO INFUSION OF OPTIONAL REINFUSION: Pulse oximetry of > 90% on room air.
 NCT03618550,1,Histologic diagnosis of classical Hodgkin’s lymphoma. Primary refractory or relapsed disease proven by biopsy at enrolling institution.
+NCT03618550,3,Relapse or refractory disease following 1 line of multi-agent chemotherapy (not including pembro-GVD).
 NCT03618550,4,Eligible for high dose therapy (HDT)/ASCT.
 NCT03618550,5,Achieved complete response (Deauville 3 or better) following 2 cycles of pembro-GVD.
 NCT03618550,13,Serum creatinine =< 1.5 X upper limit of normal (ULN) OR measured or calculated creatinine clearance (CrCl) (glomerular filtration rate [GFR] can also be used in place of creatinine or CrCl) >= 60 mL/min for subject with creatinine levels > 1.5 X institutional ULN.
@@ -135,6 +159,7 @@ NCT03618550,21,"HIV-infected participants must have well-controlled HIV on antir
 * Participants on ART must have been on a stable regimen, without changes in drugs or dose modification, for at least 4 weeks before study entry (day 1) and agree to continue ART throughout the study."
 NCT03618550,22,Participants who have AEs due to previous anticancer therapies must have recovered to ≤ grade 1 or baseline. Participants with endocrine-related AEs who are adequately treated with hormone replacement or participants who have ≤ grade 2 neuropathy are eligible.
 NCT03618550,23,"Archival tumor tissue sample or newly obtained (core, incisional or excisional) biopsy of a tumor lesion not previously irradiated has been provided. Formalin- fixed, paraffin embedded (FFPE) tissue blocks are preferred to slides. Newly obtained biopsies are preferred to archived tissue."
+NCT03708224,3,Agree to research analysis of an existing pre-treatment biopsy available that was obtained within 90 days prior to the day of consent or agree to a new biopsy for research (or clinical diagnosis) within the screening window. Needle biopsies must be at least 20 Gauge in diameter
 NCT03708224,10,"Serum creatinine =< 1.5 x upper limit of normal (ULN) OR calculated creatinine clearance >= 50 mL/min creatinine clearance by Cockcroft-Gault formula for participants in whom, in the investigator‘s judgment, serum creatinine levels do not adequately reflect renal function (performed within 14 days of treatment initiation)
 * Creatinine clearance should be calculated by Cockcroft-Gault formula or per institutional standard"
 NCT03708224,13,Albumin >= 2.5 mg/dL (performed within 14 days of treatment initiation)
@@ -152,6 +177,7 @@ NCT03710421,9,"Participant must have relapsed or refractory disease after all 3 
 * Participant must have received prior treatment with an anti‐CD38 antibody.
 * Participants must be refractory to last line of therapy prior to study enrollment (refractory myeloma is defined as disease that is nonresponsive, progression on treatment, or shows progression within 60 days after the last prior line of therapy).
 * Participants who were not candidates to receive one or more of the above treatments are eligible; however, the reason must be clearly documented in the case report form.
+* Note: induction chemotherapy, autologous stem-cell transplantation (ASCT), and maintenance therapy should be considered as 1 ""regimen."""
 NCT03710421,11,Total serum bilirubin =< 2.0 mg/dL.
 NCT03710421,15,"Serum creatinine =< 2.5 x ULN or estimated creatinine clearance of >= 40 mL/min per the Cockcroft‐Gault formula, and the participant is not on hemodialysis."
 NCT03710421,20,Oxygen (O2) saturation >= 92%.
@@ -162,6 +188,7 @@ NCT03728335,19,"Seronegative for human immunodeficiency virus (HIV) antigen/anti
 NCT03734692,2,"Patients must have first or second peritoneal recurrence of epithelial adenocarcinoma or carcinosarcoma of ovarian, tubal or peritoneal origin:
 * Histologic documentation of the original primary tumor is required via the pathology report.
 * Original tumor blocks from the primary diagnosis will be requested by our study pathologist at Magee-Women’s Hospital of University of Pittsburgh Medical Center (UPMC) Cancer Centers. Original tumor blocks may be reviewed after registration (informed consent and enrollment)."
+NCT03734692,3,Patients must have completed prior platinum-based therapy. Response can be complete or partial if it otherwise meets platinum sensitive criteria.
 NCT03734692,4,"Patients must be platinum-sensitive, defined as having a progression free interval (PFI) of more than 6 months (180 days) from any platinum therapy. Patients are allowed to have had other lines of therapy since last platinum if PFI after platinum therapy meets platinum sensitive criteria."
 NCT03734692,5,"Patients must have measurable disease in the peritoneal cavity, measurable per Response Evaluation Criteria in Solid Tumors (RECIST) 1.1 criteria:
 * A mass with a length of 1.0 cm or greater and/or

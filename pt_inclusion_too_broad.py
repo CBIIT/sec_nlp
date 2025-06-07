@@ -21,7 +21,7 @@ pt_inclusions = pd.read_sql(
     order by nct_id limit 100""",
     engine,
 )
-pt_inclusions.to_csv("pt_inclusions_og.txt", encoding="utf_8_sig", index=False)
+pt_inclusions.to_csv("pt_true_positives.txt", encoding="utf_8_sig", index=False)
 
 """
 2. Identify the predicted inclusion prior therapies for the same set of trials (i.e., from NLP pipeline)
@@ -36,7 +36,7 @@ pt_pred_inclusions = pd.read_sql(
 pt_pred_inclusions["candidate_criteria_text"] = pt_pred_inclusions[
     "candidate_criteria_text"
 ].apply(lambda x: re.sub(r"\(.+\)--- ?", "", x))
-pt_pred_inclusions.to_csv("pt_pred_inclusions.txt", encoding="utf_8_sig", index=False)
+pt_pred_inclusions.to_csv("pt_predictions.txt", encoding="utf_8_sig", index=False)
 
 # %%
 

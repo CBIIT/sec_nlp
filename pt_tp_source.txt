@@ -1,6 +1,8 @@
 ﻿nct_id,name,source
+NCT02452008,Abiraterone,"Have metastatic castration-resistant prostate cancer, are chemo-naïve for mCRPC (however, six cycles of docetaxel are allowed in hormone-sensitive disease), and have progressed on abiraterone treatment"
 NCT02452008,Abiraterone,"Must have had prior abiraterone treatment"
 NCT02734537,Gross Total Resection,"Per the operative report, the gross total resection of the primary tumor with curative intent was completed within 8 weeks prior to randomization"
+NCT02734537,Gross Total Resection,"Patient has undergone total resection of the primary tumor with curative intent"
 NCT03104491,Allogeneic Hematopoietic Stem Cell Transplantation,"Patients who underwent an allogeneic hematopoietic stem cell transplantation from any donor source for acute lymphocytic leukemia"
 NCT03161431,Anti-PD1 Monoclonal Antibody,"Prior disease progression on anti-PD1 therapy (i.e., anti-PD1 or anti-PD-L1, including prior adjuvant)"
 NCT03164460,Radiation Therapy,"Patients with histologically documented recurrent head and neck cancer, or second primary head and neck cancer, AND who have previously received radiation (at least 30 Gy) for head and neck cancer"
