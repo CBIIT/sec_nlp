@@ -1,4 +1,4 @@
-﻿nct_id,name,source
+nct_id,name,source
 NCT02452008,Abiraterone,"Have metastatic castration-resistant prostate cancer, are chemo-naïve for mCRPC (however, six cycles of docetaxel are allowed in hormone-sensitive disease), and have progressed on abiraterone treatment"
 NCT02452008,Abiraterone,"Must have had prior abiraterone treatment"
 NCT02734537,Gross Total Resection,"Per the operative report, the gross total resection of the primary tumor with curative intent was completed within 8 weeks prior to randomization"
@@ -11,7 +11,6 @@ NCT03186898,Computed Tomography,"All patients must have computed tomography (CT)
 NCT03277638,Radiation Therapy,"The patient must have completed chemoradiation with radiation therapy and temozolomide of the primary tumor according to standards of care"
 NCT03422198,Hysterectomy,"Patients post hysterectomy and free from residual disease"
 NCT03465592,Allogeneic Bone Marrow Transplantation,"Patients must be post reduced intensity conditioning (RIC) haploidentical bone marrow transplant (haploBMT)"
-NCT03488693,Mastectomy,"Patients must have been treated by breast conserving surgery (BCS) or mastectomy with clear margins of excision"
 NCT03556228,Antineoplastic Agent,"Histologically or cytologically confirmed diagnosis of any type of solid tumor malignancy or lymphoma that is not responsive to standard therapies or had progressed following standard therapy and for which there is no approved or curative therapy"
 NCT03602157,Brentuximab Vedotin,"These prior treatment regimens must include brentuximab vedotin"
 NCT03618550,Multiple Agent Systemic Chemotherapy,"Relapse or refractory disease following 1 line of multi-agent chemotherapy (not including pembro-GVD)"

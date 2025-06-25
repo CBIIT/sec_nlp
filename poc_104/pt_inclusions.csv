@@ -1,0 +1,186 @@
+text,label
+"Patients may have had prior therapy including sipuleucel-T, radium-223, abiraterone, ketoconazole, and/or Tak-700",LABEL_1
+"Men of reproductive potential and those who are surgically sterilized (i.e., postvasectomy) must agree to practice effective barrier contraception that has an expected failure rate of < 1% during and for 6 months after discontinuation of study treatment
+* If condoms are used as a barrier contraceptive, a spermicidal agent should be added to ensure that pregnancy does not occur",LABEL_1
+Patients may be receiving continuous hormonal ablation with surgical or medical castration with baseline testosterone < 50ng/dL,LABEL_1
+"If the patient is a woman is of childbearing potential, a serum pregnancy test, obtained within 14 days prior to step 2 registration, must be negative, and, if randomized to receive radiation therapy, the woman must agree to use contraception",LABEL_1
+"Patients must have had endocrine therapy initiated or planned for >= 5 years; premenopausal women will receive ovarian ablation plus aromatase inhibitor therapy or tamoxifen if adjuvant chemotherapy was not administered; for all patients, endocrine therapy can be given concurrently or following RT",LABEL_1
+Patients may or may not have had adjuvant chemotherapy,LABEL_1
+"RT must commence within 16 weeks of definitive surgery if the patient is not treated with chemotherapy; if adjuvant chemotherapy is given, RT must begin within 12 weeks after the last dose; (Note: adjuvant chemotherapy may be ongoing at the time of randomization)
+* Note: Definitive surgery is defined as the last breast cancer-related surgery",LABEL_1
+"Women of childbearing potential must have agreed to use an effective contraceptive method; a woman is considered to be of ""childbearing potential"" if she has had menses at any time in the preceding 12 consecutive months; in addition to routine contraceptive methods, ""effective contraception"" also includes heterosexual celibacy and surgery intended to prevent pregnancy (or with a side-effect of pregnancy prevention) defined as a hysterectomy, bilateral oophorectomy or bilateral tubal ligation, or vasectomy/vasectomized partner; however, if at any point a previously celibate patient chooses to become heterosexually active during the time period for use of contraceptive measures outlined in the protocol, she is responsible for beginning contraceptive measures
+* Women of childbearing potential will have a pregnancy test to determine eligibility as part of the Pre-Study Evaluation; this may include an ultrasound to rule-out pregnancy if a false-positive is suspected; for example, when beta-human chorionic gonadotropin is high and partner is vasectomized, it may be associated with tumor production of human chorionic gonadotropin (hCG), as seen with some cancers; patient will be considered eligible if an ultrasound is negative for pregnancy",LABEL_1
+Subjects with an intolerance to bendamustine may be allowed to enroll at the discretion of the clinical investigator if he/she thinks that the subject is a candidate for lymphodepletion with cyclophosphamide and fludarabine.,LABEL_1
+"Female subject of childbearing potential should have a negative urine or serum pregnancy within 2 weeks prior to receiving the first dose of study medication. On the day of planned treatment, if a blood pregnancy test has not been performed within the two week window, a stat pregnancy test (urine or blood) should be performed and the results reviewed before treatment is begun",LABEL_1
+"Male subjects must agree to use an adequate method of contraception and refrain from donating sperm, starting with the first dose of study therapy through 5 months after the last dose of study therapy.
+* Note: Abstinence is acceptable if this is the usual lifestyle and preferred contraception for the subject",LABEL_1
+Patients are allowed to have had other lines of therapy since last platinum if PFI after platinum therapy meets platinum sensitive criteria.,LABEL_1
+"Patients with a history of immunosuppressant (infliximab, vedolizumab etc) use before FMT can be allowed if last dose was administered >= 3 months prior to FMT treatment when used for the treatment of conditions other than for ICI- induced GI toxicities (e.g., infliximab is used in the treatment of Crohn’s disease, rheumatoid arthritis, plaque psoriasis, and vedolizumab is used in treating ulcerative colitis)",LABEL_1
+Patients who have already started on post-prostatectomy GnRH agonist/antagonist for =< 180 days prior to registration are eligible (Note: patients who started on an oral antiandrogen are eligible if started =< 180 days and stopped prior to registration),LABEL_1
+Patients who were on ibrutinib-rituximab maintenance and who develop ibrutinib associated toxicities/ibrutinib associated reasons for discontinuation (other than disease progression) are allowed to continue rituximab and SWITCH to acalabrutinib,LABEL_1
+Prior pomalidomide exposure allowed if ≥ PR achieved and no disease progression occurred within 60 days of last dose received,LABEL_1
+May have had chemotherapy in any line,LABEL_1
+Patients who received chemotherapy must have recovered (Common Terminology Criteria for Adverse Events [CTCAE] grade =< 1) from the acute side effects of chemotherapy (except for residual alopecia or residual grade 2 peripheral neuropathy). A washout period of at least 21 days is required between last chemotherapy dose and registration (provided the patient did not receive radiotherapy),LABEL_1
+Patients who received radiotherapy must have completed and fully recovered from the acute effects of radiotherapy. A washout period of at least 14 days is required between end of radiotherapy and registration,LABEL_1
+"International normalized ratio (INR) =< 1.5, and a partial thromboplastin time (PTT) =< 5 seconds above the ULN (unless receiving anticoagulation therapy). Patients receiving warfarin must be switched to low molecular weight heparin or edoxaban or show stability on another Food and Drug Administration (FDA) approved oral anticoagulant with stable coagulation profile prior to first dose of protocol therapy. There may be no active bleeding (that is, no bleeding within 14 days prior to first dose of protocol therapy) or pathological condition present that carries a high risk of bleeding (for example, tumor involving major vessels or known varices)",LABEL_1
+"If sexually active, must be postmenopausal, surgically sterile, or using effective contraception (hormonal or barrier methods)",LABEL_1
+Palliative radiotherapy (to bone or soft tissue lesions) must be completed > 1 week prior to start of study drug (exception: palliative radiotherapy for pain may be used any time prior to first dose),LABEL_1
+"Clinically significant toxic effect(s) of the most recent prior anti-cancer therapy must be grade 1 or resolved (except alopecia and sensory neuropathy); patients with grade 2 adrenal insufficiency related to prior anti-cancer therapy (defined as requiring medical intervention, such as concomitant steroids) or grade 2 hypothyroidism (defined as requiring hormone replacement therapy) may be enrolled provided that clinical symptoms are adequately controlled and the daily dose is 10 mg or less of prednisone or equivalent. If the patient received major surgery or radiation therapy of > 30 Gy, they must have recovered from the toxicity and/or complications from the intervention",LABEL_1
+Adequate contraception and negative pregnancy test if pregnancy possible,LABEL_1
+"If receiving venetoclax in combination with anti-CD20 monoclonal antibody, patients must have completed or discontinued the anti-CD20 monoclonal antibody portion of the regimen prior to discontinuing therapy",LABEL_1
+"Patients must have no definite evidence for extrapelvic metastatic disease. This may be determined by CIM (CT abdomen/pelvis or MRI abdomen/pelvis AND bone scintigraphy or equivalent) within 26 weeks prior to step 0 registration. If patient does not have prior CIM, an existing study-eligible = PET using FDA-approved radiotracer may be used to determine whether patient requires CIM.",LABEL_1
+"Patient must not have started short term ADT for biochemical recurrence prior to baseline PET (PET1), but may start short term ADT after PET and up to 7 days prior to study registration.
+* NOTE:  A short course (e.g., ~ 4 weeks) of low-dose anti-androgen (e.g. bicalutamide), started given after PET1, either before or after study registration, is also permitted as a brief temporizing measure/bridge to protocol-approved SOC short term ADT",LABEL_1
+Concurrent receipt of bone modifying agents (bisphosphonates or rank-ligand inhibitors) is allowed,LABEL_1
+"Documented CD19+ mantle cell lymphoma (MCL) by flow cytometry or immunohistochemistry (IHC) (from biopsy) if prior CD19 directed therapy was previously used
+* BM is optional at enrollment IF patient already has biopsy proven disease",LABEL_1
+"Male subjects should agree to use an adequate method of contraception starting with the first dose of study therapy through 7 months after the last dose of study therapy
+* Abstinence is acceptable if this is the usual lifestyle and preferred contraception for the subject",LABEL_1
+"Prior treatment with BRAF/MEK inhibitors permitted, however, not required.",LABEL_1
+Participants with a prior or concurrent malignancy whose natural history or treatment (in the opinion of the treating physician) does not have the potential to interfere with the safety or efficacy assessment of the investigational regimen are eligible for this trial provided it does not require concurrent therapy,LABEL_1
+"Patients must be offered the opportunity to participate in specimen banking of formalin-fixed paraffin-embedded (FFPE) tissue and whole blood. If a patient is unable to submit archival tissue, should the patient need to undergo a standard of care biopsy per National Comprehensive Cancer Network (NCCN) guidelines, patients must then be offered the opportunity to submit the fresh tumor tissue from that biopsy. With participant consent, specimens must be collected and submitted via the Southwest Oncology Group (SWOG) Specimen Tracking System",LABEL_1
+"Patients may have also received one cycle of treatment (no more than 4 weeks) with gemcitabine + nab-paclitaxel while waiting for germline test results, prior to platinum-based therapy",LABEL_1
+"Computed tomography (CT), magnetic resonance imaging (MRI), positron emission tomography (PET)/CT, or PET/MRI for staging before registration; may be pre-operative (op) or post-op",LABEL_1
+"Patients who are human immunodeficiency virus (HIV) positive may participate IF they meet the following eligibility requirements:
+* They must be stable on their anti-retroviral regimen, and they must be healthy from an HIV perspective 
+* They must have an undetectable viral load and a CD4 count >= 250 cells/uL within 7 days of enrollment
+* They must not be currently receiving prophylactic therapy for an opportunistic infection and must not have had an opportunistic infection within the past 6 months
+* HIV-infected patients should be monitored every 12 weeks for viral load and CD4 counts",LABEL_1
+"For patients with evidence of chronic hepatitis B virus (HBV) infection, the HBV viral load must be undetectable on suppressive therapy, if indicated",LABEL_1
+PATIENT: Patients with a Food and Drug Administration (FDA)-approved indication to receive an anti-programmed cell death protein-1 (PD-1) or anti-programmed death-ligand 1 (PD-L1) monoclonal antibody must have received at least one cycle of this therapy prior to receiving treatment on this trial,LABEL_1
+"Any stem cell source, conditioning regimen, and immunosuppression regimen as determined by the treating physician, per institutional guidelines, is permitted. Patients may have received any therapy, or no therapy, prior to transplant.",LABEL_1
+"Willing to comply with the treatment assignment:
+* Intent to proceed with DEC-C therapy if one or more variants detected prior to transplant persists at Day 30 post-transplant with a variant allele frequency of >= 0.5%.
+* Intent to proceed with standard of care as determined by the treating physician on the observation arm (no DEC-C intervention) if no variants detected prior to transplant persist at Day 30 post-transplant with a variant allele frequency of >= 0.5%.",LABEL_1
+Patients must enroll within 8 weeks of completion of definitive surgery or adjuvant radiotherapy if indicated,LABEL_1
+"Has completed adjuvant radiation if planned. Patients who received low dose capecitabine concurrent with radiation as a radiosensitizer are eligible
+* Exception: Patients with confirmed Gilbert’s syndrome (persistent or recurrent hyperbilirubinemia that is predominantly unconjugated in the absence of hemolysis or hepatic pathology), who will be allowed only in consultation with their physician",LABEL_1
+"Patient must (1) be planning to receive, (2) be receiving or (3) have received at least three combined months (i.e., 12 weeks) of perioperative (neoadjuvant, adjuvant or a combination of both) systemic, multi-agent chemotherapy. Patients may have had up to 6 months of perioperative systemic therapy as deemed appropriate by their primary treating medical team (patients can have received radiation or chemoradiation in addition to this 6 month course)",LABEL_1
+"Patient must be no more than 12 weeks from their most recent treatment (this may be chemotherapy, radiotherapy or surgery)",LABEL_1
+Subjects with late relapse (> 2 years from previous chemotherapy) not amenable to resection are eligible if they have received first line platinum based chemotherapy and are deemed not amenable to surgical resection (no need for 1 salvage regimen in late relapse patients to be eligible),LABEL_1
+Prior autologous stem cell transplant is allowed; patients must be >= 6 months post- autologous stem cell transplantation to enroll,LABEL_1
+"Patients with a history of prostate cancer (T2NXMX or lower with Gleason score =< 7) treated with definitive intent (surgically or with radiation therapy) at least 1 year prior to study entry are eligible, provided that the subject is considered prostate cancer-free and the following criteria are met: 
+* Patients who have undergone radical prostatectomy must have undetectable prostate specific antigen (PSA) for > 1 year and at screening
+* Patients who have had radiation must have a PSA doubling time > 1 year (based on at least 3 values determined >1 month apart) and a total PSA value that does not meet Phoenix criteria for biochemical recurrence (i.e., < 2.0 ng/mL above nadir)
+* Patients with untreated low-risk prostate cancer (Gleason score =< 6) on active surveillance with PSA doubling time >1 year (based on at least 3 values determined > 1 month apart) are also eligible",LABEL_1
+"Patients must have measurable disease, as defined by Response Evaluation Criteria in Solid Tumors (RECIST) version (v)1.1. Previously irradiated lesions cannot be counted as target lesions unless there has been demonstrated progression in the lesion since radiotherapy and no other lesions are available for selection as target lesions",LABEL_1
+"Have available archival tumor tissue sample or newly obtained core or excisional biopsy of a tumor lesion. Formalin-fixed, paraffin embedded (FFPE) tissue blocks are preferred to slides.
+* Newly obtained biopsies are preferred to archived tissue, but archived sample can be used at baseline provided that the patient has only had anti-PD-1/L1 based regimen since obtaining the sample.
+* Biopsies may be taken from any amenable lesion, but it is preferable to use the same lesion throughout. 
+* Biopsy may be taken from previously irradiated lesions only if they have progressed since radiation therapy.
+* Patient may still be eligible for study if tumor is not amenable to safe biopsy or biopsy is judged by patient or treating physician to not be in their best interest.",LABEL_1
+"Prior adverse events from anticancer therapy must be resolved to =< grade 1, with the exception of alopecia or endocrinopathies, which may be on replacement therapy. Prednisone equivalent of =< 10 mg is allowed.",LABEL_1
+Prior elotuzumab is allowed,LABEL_1
+"Have metastatic castration-resistant prostate cancer, are chemo-naïve for mCRPC (however, six cycles of docetaxel are allowed in hormone-sensitive disease), and have progressed on abiraterone treatment",LABEL_0
+Must have had prior abiraterone treatment,LABEL_0
+"Per the operative report, the gross total resection of the primary tumor with curative intent was completed within 8 weeks prior to randomization",LABEL_0
+Patient has undergone total resection of the primary tumor with curative intent,LABEL_0
+Patients who underwent an allogeneic hematopoietic stem cell transplantation from any donor source for acute lymphocytic leukemia,LABEL_0
+"Prior disease progression on anti-PD1 therapy (i.e., anti-PD1 or anti-PD-L1, including prior adjuvant)",LABEL_0
+"Patients with histologically documented recurrent head and neck cancer, or second primary head and neck cancer, AND who have previously received radiation (at least 30 Gy) for head and neck cancer",LABEL_0
+"The patient must have a newly diagnosed unifocal intracranial meningioma, gross totally resected",LABEL_0
+All patients must have computed tomography (CT) scan chest/abdomen/pelvis with multiphasic liver CT scan prior to registration;,LABEL_0
+The patient must have completed chemoradiation with radiation therapy and temozolomide of the primary tumor according to standards of care,LABEL_0
+Patients post hysterectomy and free from residual disease,LABEL_0
+Patients must be post reduced intensity conditioning (RIC) haploidentical bone marrow transplant (haploBMT),LABEL_0
+Histologically or cytologically confirmed diagnosis of any type of solid tumor malignancy or lymphoma that is not responsive to standard therapies or had progressed following standard therapy and for which there is no approved or curative therapy,LABEL_0
+These prior treatment regimens must include brentuximab vedotin,LABEL_0
+Relapse or refractory disease following 1 line of multi-agent chemotherapy (not including pembro-GVD),LABEL_0
+Agree to research analysis of an existing pre-treatment biopsy available that was obtained within 90 days prior to the day of consent or agree to a new biopsy for research (or clinical diagnosis) within the screening window,LABEL_0
+"Participant must have relapsed or refractory disease after all 3 prior treatment regimens with the following requirements:
+* Participant must have received prior treatment with an immunomodulatory agent.
+* Participant must have received prior treatment with a proteasome inhibitor.
+* Participant must have received prior treatment with an anti‐CD38 antibody.",LABEL_0
+Patients must have completed prior platinum-based therapy,LABEL_0
+"Patients must be platinum-sensitive, defined as having a progression free interval (PFI) of more than 6 months (180 days) from any platinum therapy. Patients are allowed to have had other lines of therapy since last platinum if PFI after platinum therapy meets platinum sensitive criteria.",LABEL_0
+"Patients with MM whose disease meets the following criteria: a. Progression on or after at least 3 prior lines of therapy including a(n) PI, IMiD, and anti-CD38 antibody, OR b. Patients must be triple-refractory, defined as being refractory to prior treatment with at least 1 anti-CD38 antibody, a proteasome inhibitor, and an IMiD.",LABEL_0
+"including either: a. Progression on or after at least 3 lines of therapy, or intolerance of therapy, including a proteasome inhibitor, an Immunomodulatory agent (IMiD), and an anti-CD38 antibody, OR b. Progression on or after an anti-CD38 antibody and have disease that is ""double refractory"" to a proteasome inhibitor and an IMiD, or intolerance of therapy.",LABEL_0
+Surgery consisted of total abdominal or laparoscopic hysterectomy and bilateral salpingo oophorectomy (TH-BSO) with or without lymph node dissection,LABEL_0
+Treatment with any ICPI agent,LABEL_0
+Histologically confirmed osteosarcoma (at either original diagnosis or relapse) that has either recurred or progressed after at least one prior systemic therapy and for which no curative therapy exists,LABEL_0
+"Patient has diagnosis of pathologically confirmed prostate cancer, treated with radical prostatectomy",LABEL_0
+Treatment with any ICPI agent(s),LABEL_0
+Patient should have previously treated with any PARP inhibitor and must have remained on treatment for >= 2 months prior to progression of disease,LABEL_0
+Detectable PSA after radical prostatectomy. Detectable PSA is defined as serum PSA > 0 ng/mL at least 30 days after prostatectomy,LABEL_0
+Patients must have received at least 1 prior line of endocrine therapy in the metastatic setting or have had progression within 12 months of adjuvant endocrine therapy,LABEL_0
+Patient must previously have undergone radical prostatectomy,LABEL_0
+Prior treatment with ibrutinib discontinued for reasons other than progression,LABEL_0
+Subjects must have received at least 2 doses of an approved anti- PD-1/L1 mAb,LABEL_0
+Has received daratumumab or Faspro in any prior line of therapy,LABEL_0
+Progressed on prior endocrine therapy,LABEL_0
+"Progression after at least 12 weeks of maintenance pemetrexed/pembrolizumab, or pembrolizumab alone",LABEL_0
+Patients must have castrate refractory prostate cancer with prior docetaxel treatment which was used in the castrate refractory setting,LABEL_0
+"Patients must have progressed on a platinum-based chemotherapy and any of the Food and Drug Administration (FDA)-approved PD-1 or PD-L1 immune checkpoint inhibitors, either given sequentially or in combination",LABEL_0
+Patients must have received previous treatment with immunotherapy with PD-1 inhibitor alone or in combination with chemotherapy,LABEL_0
+Patients who receive any type of immune checkpoint inhibitor (ICI) therapy,LABEL_0
+Patients must have undergone cytoreductive surgery and 3-8 cycles of platinum-based systemic chemotherapy prior to the second look surgery,LABEL_0
+Patients must have received venetoclax-based therapy for at least 6 months (including dose interruptions),LABEL_0
+Patient must have had a radical prostatectomy (RP) as definitive therapy for histopathologically-proven prostatic adenocarcinoma,LABEL_0
+Patients must have received neoadjuvant chemotherapy prior to breast surgery,LABEL_0
+Definitive breast surgery must have been performed and includes lumpectomy or mastectomy with pathologically clear margins (i.e. no ink on tumor),LABEL_0
+Participants must be currently receiving acalabrutinib and have been taking acalabrutinib for between 3 and 7 months prior to initiating screening procedures on the study,LABEL_0
+"Relapsed or refractory to at least 1 prior line of therapy, including both a proteasome inhibitor and an immunomodulatory drug",LABEL_0
+Surgery must have included a hysterectomy,LABEL_0
+Patients must have metastatic disease and received first line platinum-based chemotherapy,LABEL_0
+"Must have undergone an open or robotic hysterectomy (total abdominal, vaginal, radical, or total laparoscopic) for carcinoma of the cervix or endometrium",LABEL_0
+"Participant must have had prior systemic therapy in metastatic setting that:   
+* Included enfortumab vedotin",LABEL_0
+Patients must have had at least one prior line of cytotoxic chemotherapy,LABEL_0
+"Received at least two prior regimens of therapy for unresectable or metastatic CRC including fluoropyrimidine-, oxaliplatin-, and irinotecan-based regimens",LABEL_0
+Participant must have documented tumor progression during or following at least one prior systemic regimen as established by diagnostic imaging,LABEL_0
+Patient must have undergone surgery with gross total resection and must be randomized within 8 weeks of surgery,LABEL_0
+"Prior exposure and disease progression during at least 1 line of therapy including a checkpoint inhibitor. This may include a single checkpoint inhibitor, therapy with two checkpoint inhibitors simultaneously, or chemotherapy and immunotherapy combined or in sequence and must be the line immediately prior to enrollment on the trial",LABEL_0
+PATIENT: Prior treatment with a platinum-containing regimen,LABEL_0
+Diagnosis of myelodysplastic syndromes (MDS) based on World Health Organization classification (2016 revision) who have received an allogeneic hematopoietic cell transplant,LABEL_0
+Has had definitive surgical resection,LABEL_0
+Progressed on at least one line of therapy (no restrictions on type of previous treatment),LABEL_0
+The patient must have undergone a lumpectomy and the margins of the resected specimen or re-excision must be histologically free of invasive tumor and breast ductal carcinoma in situ (DCIS) with no ink on tumor as determined by the local pathologist,LABEL_0
+"Completion of preoperative systemic chemotherapy with biochemical, metabolic, and/or radiographic response defined as a reduction in the baseline CA 19-9 by > 50% or radiographic response as defined by Response Evaluation Criteria in Solid Tumors (RECIST) 1.1 or metabolic response on positron emission tomography (PET)-magnetic resonance imaging (MRI) defined by PET Response Criteria in Solid Tumors (PERCIST) criteria",LABEL_0
+Patient must have a diagnosis of pancreatic cancer and have successfully undergone a curative intent surgical resection,LABEL_0
+Have progressive metastatic castration-resistant prostate cancer (mCRPC) despite prior androgen deprivation therapy,LABEL_0
+Must have progressed after first-line cisplatin based combination chemotherapy,LABEL_0
+Must have received prior lenalidomide therapy,LABEL_0
+"Previously completed venetoclax + anti-CD20 antibody +/- X regimen as a fixed duration first-line (1L) therapy and achieved documented response, defined as complete remission, complete remission with incomplete marrow recovery, partial remission, or nodular partial remission.",LABEL_0
+"History of histologically confirmed, clinical localized adenocarcinoma of the prostate treated with radical prostatectomy with definitive intent",LABEL_0
+Patients must have received standard of care chemotherapy and/or immunotherapy,LABEL_0
+Prior treatment with a minimum of one TKI,LABEL_0
+"Must have relapsed / refractory MM, having received treatment with a proteasome inhibitor, immunomodulatory agent (IMiD), and anti-CD38 therapy.",LABEL_0
+"Patients who had disease progression during or following treatment with at least one platinum-containing regimen (e.g., gemcitabine and cisplatin [GC], methotrexate, vinblastine, doxorubicin and cisplatin [MVAC], carboplatin and gemcitabine [Carbo-Gem]) and an immune checkpoint inhibitor (PD-1/ PD-L1 inhibitor including but not limited to: atezolizumab, pembrolizumab, durvalumab, avelumab, and nivolumab)",LABEL_0
+Disease progression on a PD-1/L1 inhibitor-containing regimen (given as monotherapy or in combination with other therapy),LABEL_0
+Participants must have progressed on or after treatment with an anti-PD-1/PD-L1 mAb administered either as monotherapy or in combination with other checkpoint inhibitors or other therapies in their most recent line of therapy,LABEL_0
+"The most recent systemic therapy must be an ICI-containing regimen, delivered for at least 3 months prior to development of oligoprogressive lesions, with the last dose received within 3 months of trial enrollment.",LABEL_0
+"Prior line of therapy must include immunomodulatory imide drug (iMID), proteasome inhibitor, and anti-CD38 monoclonal antibody",LABEL_0 
+"Patients may have received prior therapy including enzalutamide, docetaxel, and/or cabazitaxel.",LABEL_1
+"Prior therapy including immunotherapy such as pembrolizumab or nivolumab is allowed.",LABEL_1
+"Patients permitted prior therapy with a combination of androgen deprivation therapy (ADT) and bicalutamide.",LABEL_1
+"Prior therapy with investigational agents is permitted provided there was a washout period.",LABEL_1
+"Patients may have had prior chemotherapy regimens for metastatic disease.",LABEL_1
+"Prior therapy could include localized treatments such as radiotherapy or surgery.",LABEL_1
+"Patients may have received prior treatment with bone-targeted agents like denosumab or zoledronic acid.",LABEL_1
+"Prior therapy with experimental vaccines is allowed under specific protocols.",LABEL_1
+"Prior therapy including alternative or complementary medicine is allowed if deemed safe by the investigator.",LABEL_1
+"Patients may have had prior therapy including enzalutamide or abiraterone, provided their ECOG performance status was 0 or 1.",LABEL_1
+"Prior therapy including immunotherapy such as pembrolizumab is allowed, given stable controlled hypertension.",LABEL_1
+"Patients permitted prior therapy with docetaxel, provided they had no history of severe cardiovascular disease.",LABEL_1
+"Prior therapy with investigational agents is permitted provided there was a washout period and no evidence of active autoimmune disease.",LABEL_1
+"Patients may have had prior chemotherapy regimens for metastatic disease, provided their liver function tests were within acceptable limits.",LABEL_1
+"Prior therapy can include localized treatments such as radiotherapy, if there was no evidence of significant myelosuppression.",LABEL_1
+"Patients may have received prior treatment with bone-targeted agents like denosumab, provided they had adequate renal function.",LABEL_1
+"Prior therapy with experimental vaccines is permitted under specific protocols, provided there was no history of allergic reactions to vaccines.",LABEL_1
+"Patients permitted prior systemic therapy for pain management, provided they had no contraindications to the prescribed medications.",LABEL_1
+"Prior therapy including alternative or complementary medicine is acceptable if deemed safe by the investigator and did not interfere with study assessments.",LABEL_1
+"Optional prior therapy included cabazitaxel for patients who had received docetaxel.",LABEL_1
+"Patients might have received docetaxel before enrollment, depending on their disease burden.",LABEL_1
+"In some cases, patients received investigational agents as part of their prior therapy.",LABEL_1
+"Depending on clinical judgment, patients may have received bone-targeted therapy to manage skeletal-related events.",LABEL_1
+"Prior treatment with a minimum of one TKI is required for all patients.",LABEL_0
+"Received prior therapy with a novel hormonal agent (NHA).",LABEL_0
+"Completion of prior chemotherapy.",LABEL_0
+"History of prior surgical resection of the primary tumor.",LABEL_0
+"Must demonstrate progression on at least one prior line of systemic therapy.",LABEL_0
+"Patients must receive prior androgen deprivation therapy (ADT) for a minimum duration of 6 months.",LABEL_0
+"Prior treatment with a specific targeted agent is a prerequisite for all patients.",LABEL_0
+"Have a confirmed diagnosis of an advanced or metastatic malignancy, a documented history of receiving and progressing on prior systemic therapy, and be deemed unsuitable for or unwilling to receive further standard-of-care treatments. ",LABEL_0
+"Must have a confirmed diagnosis of chronic lymphocytic leukemia that is refractory to or has relapsed after prior treatment with a BTK inhibitor (e.g., ibrutinib, acalabrutinib) and venetoclax.",LABEL_0
+"Patients with advanced ovarian cancer who have received and subsequently progressed on at least two prior lines of platinum-based chemotherapy are eligible",LABEL_0
+"Advanced melanoma and evidence of clinical or radiographic progression subsequent to receiving prior treatment with both a BRAF inhibitor (if applicable) and an anti-CTLA-4 antibody",LABEL_0
