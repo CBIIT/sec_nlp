@@ -95,13 +95,12 @@ def get_descendants(con, ncit_code):
 #
 
 parser = argparse.ArgumentParser(description='Create candidate criteria texts')
-
-parser.add_argument('--dbname', action='store', type=str, required=False)
-parser.add_argument('--host', action='store', type=str, required=False)
-parser.add_argument('--user', action='store', type=str, required=False)
-parser.add_argument('--password', action='store', type=str, required=False)
-parser.add_argument('--port', action='store', type=str, required=False)
-
+parser.add_argument('--force', '-f', action='store_true', required=False, default=False)
+parser.add_argument('--dbname', '-d', action='store', type=str, required=False, default='sec')
+parser.add_argument('--host', '-ho', action='store', type=str, required=False, default='localhost')
+parser.add_argument('--user', '-u', action='store', type=str, required=False, default='sec')
+parser.add_argument('--password', '-pw', action='store', type=str, required=False, default='sec')
+parser.add_argument('--port', '-p', action='store', type=str, required=False, default='5433')
 
 args = parser.parse_args()
 crit_map  = get_criteria_type_map()
@@ -116,6 +115,9 @@ where td.classification_date is null or td.classification_date <= td.tokenized_d
 """
 
 cur = con.cursor()
+if args.force:
+    cur.execute("update trial_nlp_dates set classification_date=null")
+    con.commit()
 cur.execute("""
 select count(distinct nct_id) as num_trials_to_delete  from candidate_criteria cc where cc.nct_id not in (select nct_id from trials)
 """)

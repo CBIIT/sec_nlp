@@ -12,13 +12,12 @@ from bz2 import (compress, decompress)
 from pickle import (dumps, loads)
 
 parser = argparse.ArgumentParser(description='Parse NCI codes from the text')
-
-parser.add_argument('--dbname', action='store', type=str, required=False)
-parser.add_argument('--host', action='store', type=str, required=False)
-parser.add_argument('--user', action='store', type=str, required=False)
-parser.add_argument('--password', action='store', type=str, required=False)
-parser.add_argument('--port', action='store', type=str, required=False)
-
+parser.add_argument('--force', '-f', action='store_true', required=False, default=False)
+parser.add_argument('--dbname', action='store', type=str, required=False, default='sec')
+parser.add_argument('--host', action='store', type=str, required=False, default='localhost')
+parser.add_argument('--user', action='store', type=str, required=False, default='sec')
+parser.add_argument('--password', action='store', type=str, required=False, default='sec')
+parser.add_argument('--port', action='store', type=str, required=False, default='5433')
 args = parser.parse_args()
 con = psycopg2.connect(database=args.dbname, user=args.user, host=args.host, port=args.port,
  password=args.password)
@@ -73,14 +72,20 @@ delete from candidate_criteria  where nct_id in (select d.nct_id from del_trials
 cur.execute(delete_old_trial_dates_sql)
 con.commit()
 
-
-get_trials_sql = """
-select  t.nct_id, t.record_verification_date, t.amendment_date, td.tokenized_date
-from trials t left outer join trial_nlp_dates td on t.nct_id = td.nct_id 
-where (td.tokenized_date is null)
-      or td.tokenized_date <= greatest(coalesce( t.record_verification_date,'1980-01-01'), 
-                                                            coalesce( t.amendment_date,'1980-01-01'))
-"""
+if args.force:
+    get_trials_sql = """
+                     select t.nct_id, t.record_verification_date, t.amendment_date, td.tokenized_date
+                     from trials t \
+                              left outer join trial_nlp_dates td on t.nct_id = td.nct_id
+                     """
+else:
+    get_trials_sql = """
+    select  t.nct_id, t.record_verification_date, t.amendment_date, td.tokenized_date
+    from trials t left outer join trial_nlp_dates td on t.nct_id = td.nct_id 
+    where (td.tokenized_date is null)
+          or td.tokenized_date <= greatest(coalesce( t.record_verification_date,'1980-01-01'), 
+                                                                coalesce( t.amendment_date,'1980-01-01'))
+    """
 
 get_crit_sql = """
     select nct_id, display_order, description  from trial_unstructured_criteria where nct_id = %s 

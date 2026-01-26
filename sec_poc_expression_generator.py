@@ -167,13 +167,12 @@ def process_numeric_crit(rs, regex, con, cur, criteria_type_id, ncit_code, lower
 
 
 parser = argparse.ArgumentParser(description='Generate candidate expressions')
-
-parser.add_argument('--dbname', action='store', type=str, required=False)
-parser.add_argument('--host', action='store', type=str, required=False)
-parser.add_argument('--user', action='store', type=str, required=False)
-parser.add_argument('--password', action='store', type=str, required=False)
-parser.add_argument('--port', action='store', type=str, required=False)
-
+parser.add_argument('--force', '-f', action='store_true', required=False, default=False)
+parser.add_argument('--dbname', action='store', type=str, required=False, default='sec')
+parser.add_argument('--host', action='store', type=str, required=False, default='localhost')
+parser.add_argument('--user', action='store', type=str, required=False, default='sec')
+parser.add_argument('--password', action='store', type=str, required=False, default='sec')
+parser.add_argument('--port', action='store', type=str, required=False, default='5433')
 args = parser.parse_args()
 
 
