@@ -8,7 +8,7 @@ import psycopg2
 import psycopg2.extras
 
 # Ensure the sec_etl root (where etl_processor.py lives) is on sys.path whether
-# run via the sec_etl-level symlink, directly, or through etl-new.qmd.
+# run via the sec_etl-level symlink, directly, or through etl.qmd.
 import os as _os
 import sys as _sys
 _THIS_DIR = _os.path.dirname(_os.path.abspath(__file__))
@@ -223,6 +223,6 @@ if __name__ == '__main__':
     bootstrap_processor = ClassifierProcessor(args=None, python_file=__file__)
     parser = bootstrap_processor.build_parser()
     parsed_args = parser.parse_args()
-    # Module-level `success` is what etl-new.qmd reads back out of the module
+    # Module-level `success` is what etl.qmd reads back out of the module
     # namespace (runpy.run_path) to decide whether this step passed.
     success = ClassifierProcessor(args=parsed_args, python_file=__file__).process()

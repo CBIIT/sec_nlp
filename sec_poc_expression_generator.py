@@ -9,7 +9,7 @@ import traceback
 
 # Ensure the sec_etl root (where etl_processor.py lives) is importable whether
 # this script is run via the sec_etl-level symlink, directly from its own
-# directory, or through etl-new.qmd.
+# directory, or through etl.qmd.
 _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 for _root in (_THIS_DIR, os.path.dirname(_THIS_DIR), os.path.dirname(os.path.dirname(_THIS_DIR)), os.getcwd()):
     if os.path.isfile(os.path.join(_root, 'etl_processor.py')):
@@ -802,6 +802,6 @@ if __name__ == '__main__':
     bootstrap_processor = ExpressionGeneratorProcessor(args=None, python_file=__file__)
     parser = bootstrap_processor.build_parser()
     parsed_args = parser.parse_args()
-    # Module-level `success` is what etl-new.qmd reads back out of the module
+    # Module-level `success` is what etl.qmd reads back out of the module
     # namespace (runpy.run_path) to decide whether this step passed.
     success = ExpressionGeneratorProcessor(args=parsed_args, python_file=__file__).process()
